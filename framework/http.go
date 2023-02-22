@@ -11,6 +11,6 @@ import (
 func New(sqlh repository.SqlHandler) {
 	u := handler.NewUserHandler(logic.NewUserLogic(repository.NewUserRepository(sqlh)))
 	{
-		http.Handle("/user", middleware.WithLogger(middleware.CheckToken(u)))
+		http.Handle("/users", middleware.WithLogger(middleware.CheckToken(u)))
 	}
 }

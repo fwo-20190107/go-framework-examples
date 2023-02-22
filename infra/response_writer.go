@@ -10,7 +10,7 @@ type responseWriter struct {
 	w http.ResponseWriter
 }
 
-func NewResponseWriter(w http.ResponseWriter, r *http.Request) *responseWriter {
+func NewResponseWriter(w http.ResponseWriter) *responseWriter {
 	return &responseWriter{w}
 }
 
