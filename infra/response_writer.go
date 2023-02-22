@@ -8,29 +8,25 @@ import (
 
 type responseWriter struct {
 	w http.ResponseWriter
-	r *http.Request
 }
 
 func NewResponseWriter(w http.ResponseWriter, r *http.Request) *responseWriter {
-	return &responseWriter{
-		w: w,
-		r: r,
-	}
+	return &responseWriter{w}
 }
 
-func (r *responseWriter) Header() http.Header {
-	return r.w.Header()
+func (w *responseWriter) Header() http.Header {
+	return w.w.Header()
 }
 
-func (r *responseWriter) Write(p []byte) (int, error) {
-	return r.w.Write(p)
+func (w *responseWriter) Write(p []byte) (int, error) {
+	return w.w.Write(p)
 }
 
-func (r *responseWriter) WriteHeader(status int) {
-	r.w.WriteHeader(status)
+func (w *responseWriter) WriteHeader(status int) {
+	w.w.WriteHeader(status)
 }
 
-func (r *responseWriter) MarshalZerologObject(e *zerolog.Event) {
+func (w *responseWriter) MarshalZerologObject(e *zerolog.Event) {
 }
 
 var _ http.ResponseWriter = (*responseWriter)(nil)
