@@ -37,7 +37,7 @@ func (w *responseWriter) WriteHeader(status int) {
 
 func (w *responseWriter) MarshalZerologObject(e *zerolog.Event) {
 	e.
-		Str("accessTime", w.start.Format("2006-01-02 14:04:05")).
+		Str("logTime", w.start.Format("2006-01-02 15:04:05")).
 		Str("requestUrl", w.req.URL.String()).
 		Str("method", w.req.Method).
 		Int64("size", w.req.ContentLength).
