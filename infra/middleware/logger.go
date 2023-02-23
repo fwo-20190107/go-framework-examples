@@ -13,7 +13,7 @@ var logger zerolog.Logger
 
 func WithLogger(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		writer := infra.NewResponseWriter(w)
+		writer := infra.NewResponseWriter(w, r)
 
 		ctx := infra.NewLogContext(r.Context())
 		r = r.WithContext(ctx)
