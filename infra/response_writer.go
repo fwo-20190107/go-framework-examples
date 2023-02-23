@@ -2,31 +2,49 @@ package infra
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/rs/zerolog"
 )
 
 type responseWriter struct {
-	w http.ResponseWriter
+	writer http.ResponseWriter
+	req    *http.Request
+	start  time.Time
+	status int
 }
 
-func NewResponseWriter(w http.ResponseWriter) *responseWriter {
-	return &responseWriter{w}
+func NewResponseWriter(w http.ResponseWriter, r *http.Request) *responseWriter {
+	return &responseWriter{
+		writer: w,
+		req:    r,
+		start:  time.Now(),
+	}
 }
 
 func (w *responseWriter) Header() http.Header {
-	return w.w.Header()
+	return w.writer.Header()
 }
 
 func (w *responseWriter) Write(p []byte) (int, error) {
-	return w.w.Write(p)
+	return w.writer.Write(p)
 }
 
 func (w *responseWriter) WriteHeader(status int) {
-	w.w.WriteHeader(status)
+	w.status = status
+	w.writer.WriteHeader(status)
 }
 
 func (w *responseWriter) MarshalZerologObject(e *zerolog.Event) {
+	e.
+		Str("accessTime", w.start.Format("2006-01-02 14:04:05")).
+		Str("requestUrl", w.req.URL.String()).
+		Str("method", w.req.Method).
+		Int64("size", w.req.ContentLength).
+		Int("status", w.status).
+		Str("latency", time.Since(w.start).String()).
+		Str("remoteIp", w.req.RemoteAddr).
+		Str("agent", w.req.UserAgent())
 }
 
 var _ http.ResponseWriter = (*responseWriter)(nil)
