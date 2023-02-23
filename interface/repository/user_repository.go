@@ -21,11 +21,11 @@ func (r *userRepository) GetUserByID(ctx context.Context, userID int) (*model.Us
 		return nil, err
 	}
 
-	var user *model.User
+	var user model.User
 	if err := row.Scan(&user.UserID, &user.Name, &user.Authority); err != nil {
 		return nil, err
 	}
-	return user, nil
+	return &user, nil
 }
 
 func (r *userRepository) GetAllUsers(ctx context.Context) ([]model.User, error) {
@@ -57,11 +57,11 @@ func (r *userRepository) GetLoginByID(ctx context.Context, loginID string) (*mod
 		return nil, err
 	}
 
-	var login *model.Login
+	var login model.Login
 	if err := row.Scan(&login.LoginID, &login.UserID, &login.Password); err != nil {
 		return nil, err
 	}
-	return login, nil
+	return &login, nil
 }
 
 func (r *userRepository) ModifyAuthority(ctx context.Context, userID, authority int) error {
