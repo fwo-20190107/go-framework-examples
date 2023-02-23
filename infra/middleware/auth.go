@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"encoding/binary"
+	"examples/model"
 	"net/http"
 
 	"github.com/sony/sonyflake"
@@ -18,7 +19,16 @@ func CheckToken(next http.Handler) http.HandlerFunc {
 		token := r.Header.Get(HEADER_AUTHORIZATION)
 		if len(token) == 0 {
 			next = http.HandlerFunc(unauthorized)
+		} else {
+			userID, ok := session[token]
+			if !ok {
+				next = http.HandlerFunc(unauthorized)
+			} else {
+				ctx := model.SetUserID(r.Context(), userID)
+				r = r.WithContext(ctx)
+			}
 		}
+
 		next.ServeHTTP(w, r)
 	}
 }
@@ -48,7 +58,7 @@ func RemoveToken(token string) {
 }
 
 func unauthorized(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "403 unauthorized", http.StatusUnauthorized)
+	http.Error(w, "unauthorized", http.StatusUnauthorized)
 }
 
 func init() {
