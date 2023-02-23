@@ -20,6 +20,10 @@ type logDetail struct {
 	msg   string
 }
 
+func InitLogger(w io.Writer) {
+	model.Logger = &logger{out: w}
+}
+
 func NewLogContext(ctx context.Context) context.Context {
 	l := &logDetail{}
 	return context.WithValue(ctx, &loggerKey, l)
@@ -84,7 +88,5 @@ func (l *logger) Send(ctx context.Context) error {
 var _ model.Logging = (*logger)(nil)
 
 func init() {
-	model.Logger = &logger{
-		out: os.Stdout,
-	}
+	InitLogger(os.Stdout)
 }
