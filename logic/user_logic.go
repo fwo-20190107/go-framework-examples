@@ -4,12 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"examples/infra/middleware"
 	"examples/logic/repository"
 	"examples/model"
 )
 
 type UserLogic interface {
 	Login(ctx context.Context, loginID, password string) (*model.User, error)
+	Logout(ctx context.Context)
 	GetUserByID(ctx context.Context, userID int) (*model.User, error)
 	GetAllUsers(ctx context.Context) ([]model.User, error)
 }
@@ -41,7 +43,18 @@ func (l *userLogic) Login(ctx context.Context, loginID, password string) (*model
 	if err != nil {
 		return nil, err
 	}
+
+	token, err := middleware.NewToken()
+	if err != nil {
+		return nil, err
+	}
+	middleware.AddSession(token, user.UserID)
+
 	return user, nil
+}
+
+func (l *userLogic) Logout(ctx context.Context) {
+	middleware.RemoveToken(ctx)
 }
 
 func (l *userLogic) GetUserByID(ctx context.Context, userID int) (*model.User, error) {
