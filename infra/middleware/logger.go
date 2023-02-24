@@ -3,6 +3,7 @@ package middleware
 import (
 	"examples/infra"
 	"examples/model"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -20,7 +21,9 @@ func WithLogger(next http.Handler) http.HandlerFunc {
 
 		next.ServeHTTP(writer, r)
 
-		model.Logger.Send(ctx)
+		if err := model.Logger.Send(ctx); err != nil {
+			fmt.Println(err)
+		}
 		logger.Info().Object("accesslog", writer).Send()
 	}
 }
