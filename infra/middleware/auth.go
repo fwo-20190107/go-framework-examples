@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"encoding/binary"
 	"examples/model"
 	"net/http"
@@ -12,7 +13,7 @@ import (
 const HEADER_AUTHORIZATION = "Authorization"
 
 var flaker *sonyflake.Sonyflake
-var session map[string]int
+var session = make(map[string]int)
 
 func CheckToken(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -24,11 +25,10 @@ func CheckToken(next http.Handler) http.HandlerFunc {
 			if !ok {
 				next = http.HandlerFunc(unauthorized)
 			} else {
-				ctx := model.SetUserID(r.Context(), userID)
+				ctx := model.SetUserInfo(r.Context(), token, userID)
 				r = r.WithContext(ctx)
 			}
 		}
-
 		next.ServeHTTP(w, r)
 	}
 }
@@ -49,12 +49,17 @@ func NewToken() (string, error) {
 	return string(token), nil
 }
 
-func AddToken(userID int, token string) {
+func AddSession(token string, userID int) {
 	session[token] = userID
 }
 
-func RemoveToken(token string) {
-	delete(session, token)
+func RemoveToken(ctx context.Context) {
+	token, err := model.GetAccessToken(ctx)
+	if err != nil {
+		model.Logger.Warn(ctx, err.Error())
+	} else {
+		delete(session, token)
+	}
 }
 
 func unauthorized(w http.ResponseWriter, r *http.Request) {
