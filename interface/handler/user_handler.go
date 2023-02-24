@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"database/sql"
 	"examples/logic"
 	"fmt"
@@ -19,8 +20,7 @@ func NewUserHandler(userLogic logic.UserLogic) *userHandler {
 	}
 }
 
-func (h *userHandler) getUserByID(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+func (h *userHandler) getUserByID(ctx context.Context, w http.ResponseWriter, r *http.Request) *handleError {
 	user, err := h.userLogic.GetUserByID(ctx, 1)
 	if err != nil {
 		var msg string
@@ -30,29 +30,28 @@ func (h *userHandler) getUserByID(w http.ResponseWriter, r *http.Request) {
 		default:
 			msg = err.Error()
 		}
-		http.Error(w, msg, http.StatusInternalServerError)
-		return
+		return &handleError{msg: msg, code: http.StatusInternalServerError}
 	}
 
 	bytesUser, err := json.Marshal(user)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return &handleError{msg: err.Error(), code: http.StatusInternalServerError}
 	}
 
 	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write(bytesUser); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+	return nil
 }
 
-func (h *userHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *userHandler) HandleRoot(w http.ResponseWriter, r *http.Request) (err *handleError) {
+	ctx := r.Context()
 	switch r.Method {
 	case http.MethodGet:
-		h.getUserByID(w, r)
+		err = h.getUserByID(ctx, w, r)
 	default:
 		http.NotFound(w, r)
 	}
+	return
 }
-
-var _ http.Handler = (*userHandler)(nil)
