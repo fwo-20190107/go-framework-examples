@@ -4,16 +4,16 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"examples/entity"
 	"examples/infra/middleware"
 	"examples/logic/repository"
-	"examples/model"
 )
 
 type UserLogic interface {
-	Login(ctx context.Context, loginID, password string) (*model.User, error)
+	Login(ctx context.Context, loginID, password string) (*entity.User, error)
 	Logout(ctx context.Context)
-	GetUserByID(ctx context.Context, userID int) (*model.User, error)
-	GetAllUsers(ctx context.Context) ([]model.User, error)
+	GetUserByID(ctx context.Context, userID int) (*entity.User, error)
+	GetAllUsers(ctx context.Context) ([]entity.User, error)
 }
 
 type userLogic struct {
@@ -26,7 +26,7 @@ func NewUserLogic(userRepository repository.UserRepository) *userLogic {
 	}
 }
 
-func (l *userLogic) Login(ctx context.Context, loginID, password string) (*model.User, error) {
+func (l *userLogic) Login(ctx context.Context, loginID, password string) (*entity.User, error) {
 	login, err := l.userRepository.GetLoginByID(ctx, loginID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -57,7 +57,7 @@ func (l *userLogic) Logout(ctx context.Context) {
 	middleware.RemoveToken(ctx)
 }
 
-func (l *userLogic) GetUserByID(ctx context.Context, userID int) (*model.User, error) {
+func (l *userLogic) GetUserByID(ctx context.Context, userID int) (*entity.User, error) {
 	user, err := l.userRepository.GetUserByID(ctx, userID)
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func (l *userLogic) GetUserByID(ctx context.Context, userID int) (*model.User, e
 	return user, nil
 }
 
-func (l *userLogic) GetAllUsers(ctx context.Context) ([]model.User, error) {
+func (l *userLogic) GetAllUsers(ctx context.Context) ([]entity.User, error) {
 	users, err := l.userRepository.GetAllUsers(ctx)
 	if err != nil {
 		return nil, err

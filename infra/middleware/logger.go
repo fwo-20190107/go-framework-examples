@@ -1,8 +1,8 @@
 package middleware
 
 import (
+	"examples/entity"
 	"examples/infra"
-	"examples/model"
 	"fmt"
 	"net/http"
 	"os"
@@ -21,7 +21,7 @@ func WithLogger(next http.Handler) http.HandlerFunc {
 
 		next.ServeHTTP(writer, r)
 
-		if err := model.Logger.Send(ctx); err != nil {
+		if err := entity.Logger.Send(ctx); err != nil {
 			fmt.Println(err)
 		}
 		logger.Info().Object("accesslog", writer).Send()

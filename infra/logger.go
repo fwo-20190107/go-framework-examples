@@ -3,7 +3,7 @@ package infra
 import (
 	"context"
 	"errors"
-	"examples/model"
+	"examples/entity"
 	"fmt"
 	"io"
 	"os"
@@ -16,12 +16,12 @@ type logger struct {
 }
 
 type logDetail struct {
-	level model.LogLevel
+	level entity.LogLevel
 	msg   string
 }
 
 func InitLogger(w io.Writer) {
-	model.Logger = &logger{out: w}
+	entity.Logger = &logger{out: w}
 }
 
 func NewLogContext(ctx context.Context) context.Context {
@@ -38,7 +38,7 @@ func getLogDetail(ctx context.Context) (*logDetail, error) {
 	return ins, nil
 }
 
-func (l *logger) Log(ctx context.Context, msg string, level model.LogLevel) error {
+func (l *logger) Log(ctx context.Context, msg string, level entity.LogLevel) error {
 	detail, err := getLogDetail(ctx)
 	if err != nil {
 		return err
@@ -54,23 +54,23 @@ func (l *logger) Log(ctx context.Context, msg string, level model.LogLevel) erro
 }
 
 func (l *logger) Info(ctx context.Context, msg string) error {
-	return l.Log(ctx, msg, model.LogLevelInfo)
+	return l.Log(ctx, msg, entity.LogLevelInfo)
 }
 
 func (l *logger) Warn(ctx context.Context, msg string) error {
-	return l.Log(ctx, msg, model.LogLevelWarn)
+	return l.Log(ctx, msg, entity.LogLevelWarn)
 }
 
 func (l *logger) Err(ctx context.Context, msg string) error {
-	return l.Log(ctx, msg, model.LogLevelErr)
+	return l.Log(ctx, msg, entity.LogLevelErr)
 }
 
 func (l *logger) Debug(ctx context.Context, msg string) error {
-	return l.Log(ctx, msg, model.LogLevelDebug)
+	return l.Log(ctx, msg, entity.LogLevelDebug)
 }
 
 func (l *logger) Fatal(ctx context.Context, msg string) error {
-	return l.Log(ctx, msg, model.LogLevelFatal)
+	return l.Log(ctx, msg, entity.LogLevelFatal)
 }
 
 func (l *logger) Send(ctx context.Context) error {
@@ -85,7 +85,7 @@ func (l *logger) Send(ctx context.Context) error {
 	return nil
 }
 
-var _ model.Logging = (*logger)(nil)
+var _ entity.Logging = (*logger)(nil)
 
 func init() {
 	InitLogger(os.Stdout)

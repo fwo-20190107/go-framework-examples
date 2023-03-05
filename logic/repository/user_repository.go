@@ -2,12 +2,12 @@ package repository
 
 import (
 	"context"
-	"examples/model"
+	"examples/entity"
 )
 
 type UserRepository interface {
-	GetUserByID(ctx context.Context, userID int) (*model.User, error)
-	GetAllUsers(ctx context.Context) ([]model.User, error)
-	GetLoginByID(ctx context.Context, loginID string) (*model.Login, error)
+	GetUserByID(ctx context.Context, userID int) (*entity.User, error)
+	GetAllUsers(ctx context.Context) ([]entity.User, error)
+	GetLoginByID(ctx context.Context, loginID string) (*entity.Login, error)
 	ModifyAuthority(ctx context.Context, userID, authority int) error
 }
