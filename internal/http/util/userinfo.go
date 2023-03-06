@@ -3,7 +3,6 @@ package util
 import (
 	"context"
 	"errors"
-	"examples/internal/gin/entity"
 )
 
 type userInfo struct {
@@ -25,7 +24,7 @@ func newUserInfo(token string, userID int) userInfo {
 func SetUserInfo(ctx context.Context, token string, userID int) context.Context {
 	return context.WithValue(
 		ctx,
-		&entity.UserInfoKey,
+		&userInfoKey,
 		newUserInfo(token, userID),
 	)
 }
