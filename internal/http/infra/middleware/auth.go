@@ -14,13 +14,14 @@ func CheckToken(next http.Handler) http.HandlerFunc {
 		if len(token) == 0 {
 			next = http.HandlerFunc(unauthorized)
 		} else {
-			userID, ok := registry.SessionManager.Load(token)
+			ctx := r.Context()
+			userID, ok := registry.SessionManager.Load(ctx, token)
 			if !ok {
 				next = http.HandlerFunc(unauthorized)
 			} else {
-				ctx := util.SetUserInfo(r.Context(), token, userID)
-				r = r.WithContext(ctx)
+				ctx = util.SetUserInfo(ctx, token, userID)
 			}
+			r = r.WithContext(ctx)
 		}
 		next.ServeHTTP(w, r)
 	}

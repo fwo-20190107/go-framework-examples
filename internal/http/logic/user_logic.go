@@ -49,7 +49,7 @@ func (l *userLogic) Login(ctx context.Context, loginID, password string) (*entit
 	if err != nil {
 		return nil, err
 	}
-	registry.SessionManager.AddSession(token, user.UserID)
+	registry.SessionManager.AddSession(ctx, token, user.UserID)
 
 	return user, nil
 }
@@ -60,7 +60,7 @@ func (l *userLogic) Logout(ctx context.Context) {
 		registry.Logger.Warn(ctx, err.Error())
 		return
 	}
-	registry.SessionManager.RevokeSession(token)
+	registry.SessionManager.RevokeSession(ctx, token)
 }
 
 func (l *userLogic) GetUserByID(ctx context.Context, userID int) (*entity.User, error) {
