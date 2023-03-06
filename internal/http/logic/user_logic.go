@@ -7,6 +7,7 @@ import (
 	"examples/internal/http/entity"
 	"examples/internal/http/logic/repository"
 	"examples/internal/http/registry"
+	"examples/internal/http/util"
 )
 
 type UserLogic interface {
@@ -54,7 +55,12 @@ func (l *userLogic) Login(ctx context.Context, loginID, password string) (*entit
 }
 
 func (l *userLogic) Logout(ctx context.Context) {
-	registry.SessionManager.RevokeSession(ctx)
+	token, err := util.GetAccessToken(ctx)
+	if err != nil {
+		registry.Logger.Warn(ctx, err.Error())
+		return
+	}
+	registry.SessionManager.RevokeSession(token)
 }
 
 func (l *userLogic) GetUserByID(ctx context.Context, userID int) (*entity.User, error) {

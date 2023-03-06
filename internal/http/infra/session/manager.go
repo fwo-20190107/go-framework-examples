@@ -1,10 +1,8 @@
 package session
 
 import (
-	"context"
 	"encoding/binary"
 	"examples/internal/http/entity/infra"
-	"examples/internal/http/util"
 	"sync"
 
 	"github.com/sony/sonyflake"
@@ -55,14 +53,8 @@ func (m *sessionManager) AddSession(token string, userID int) {
 	m.session.Store(token, userID)
 }
 
-func (m *sessionManager) RevokeSession(ctx context.Context) error {
-	token, err := util.GetAccessToken(ctx)
-	if err != nil {
-		return err
-	} else {
-		m.session.Delete(token)
-	}
-	return nil
+func (m *sessionManager) RevokeSession(token string) {
+	m.session.Delete(token)
 }
 
 var _ infra.SessionManage = (*sessionManager)(nil)
