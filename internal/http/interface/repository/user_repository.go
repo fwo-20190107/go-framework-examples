@@ -77,6 +77,23 @@ func (r *userRepository) GetLoginByID(ctx context.Context, loginID string) (*ent
 	}, nil
 }
 
+func (r *userRepository) StoreUser(ctx context.Context, user entity.User) (int64, error) {
+	query := "INSERT INTO user (`user_id`, `name`, `authority`) VALUES (?, ?, ?)"
+	result, err := r.Execute(ctx, query, user.UserID, user.Name, user.Authority)
+	if err != nil {
+		return 0, err
+	}
+	return result.LastInsertId()
+}
+
+func (r *userRepository) StoreLogin(ctx context.Context, login entity.Login) error {
+	query := "INSERT INTO login (`login_id`, `user_id`, `password`) VALUES (?, ?, ?)"
+	if _, err := r.Execute(ctx, query, login.LoginID, login.UserID, login.Password); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *userRepository) ModifyAuthority(ctx context.Context, userID, authority int) error {
 	query := "UPDATE user SET authority = ? WHERE user_id = ?"
 	if _, err := r.Execute(ctx, query, authority, userID); err != nil {
