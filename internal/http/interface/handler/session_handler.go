@@ -25,6 +25,10 @@ func (h *sessionHandler) signin(ctx infra.HttpContext) *infra.HttpError {
 		return &infra.HttpError{Msg: message.ErrParseForm.Error(), Code: http.StatusBadRequest}
 	}
 
+	if err := in.Validate(); err != nil {
+		return &infra.HttpError{Msg: err.Error(), Code: http.StatusBadRequest, Err: err}
+	}
+
 	if _, err := h.userLogic.Signin(ctx.Context(), in.LoginID, in.Password); err != nil {
 		return &infra.HttpError{Msg: "login failed", Code: http.StatusUnauthorized, Err: err}
 	}
