@@ -37,4 +37,17 @@ func (c *httpContext) Decode(v any) error {
 	return nil
 }
 
+func (c *httpContext) WriteJSON(code int, body any) error {
+	jsonBody, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	c.w.WriteHeader(code)
+	if _, err := c.w.Write(jsonBody); err != nil {
+		return err
+	}
+	return nil
+}
+
 var _ infra.HttpContext = (*httpContext)(nil)

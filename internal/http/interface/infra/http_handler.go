@@ -18,4 +18,5 @@ type HttpContext interface {
 	URL() *url.URL
 	Method() string
 	Decode(v any) error
+	WriteJSON(code int, body any) error
 }
