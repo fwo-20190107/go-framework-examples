@@ -8,11 +8,12 @@ import (
 	"examples/internal/http/logic/repository"
 	"examples/internal/http/registry"
 	"examples/internal/http/util"
+	"examples/message"
 )
 
 type UserLogic interface {
-	Login(ctx context.Context, loginID, password string) (*entity.User, error)
-	Logout(ctx context.Context)
+	Signin(ctx context.Context, loginID, password string) (string, error)
+	Signout(ctx context.Context)
 	GetUserByID(ctx context.Context, userID int) (*entity.User, error)
 	GetAllUsers(ctx context.Context) ([]entity.User, error)
 }
@@ -27,34 +28,34 @@ func NewUserLogic(userRepository repository.UserRepository) *userLogic {
 	}
 }
 
-func (l *userLogic) Login(ctx context.Context, loginID, password string) (*entity.User, error) {
+func (l *userLogic) Signin(ctx context.Context, loginID, password string) (string, error) {
 	login, err := l.userRepository.GetLoginByID(ctx, loginID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errors.New("loginID is not exist")
+			return "", message.ErrLoginNotFound
 		}
-		return nil, err
+		return "", err
 	}
 
 	if login.Password != password {
-		return nil, errors.New("password does not match")
+		return "", message.ErrUnmatchPassword
 	}
 
 	user, err := l.userRepository.GetUserByID(ctx, login.UserID)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	token, err := registry.SessionManager.NewToken()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	registry.SessionManager.AddSession(ctx, token, user.UserID)
 
-	return user, nil
+	return token, nil
 }
 
-func (l *userLogic) Logout(ctx context.Context) {
+func (l *userLogic) Signout(ctx context.Context) {
 	token, err := util.GetAccessToken(ctx)
 	if err != nil {
 		registry.Logger.Warn(ctx, err.Error())
