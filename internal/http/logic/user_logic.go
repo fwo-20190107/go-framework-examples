@@ -32,7 +32,7 @@ func (l *userLogic) Signin(ctx context.Context, loginID, password string) (strin
 	login, err := l.userRepository.GetLoginByID(ctx, loginID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return "", message.ErrLoginNotFound
+			return "", message.ErrUserNotFound
 		}
 		return "", err
 	}

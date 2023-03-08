@@ -43,7 +43,7 @@ func (h *sessionHandler) signout(ctx infra.HttpContext) *infra.HttpError {
 func (h *sessionHandler) HandleRoot(ctx infra.HttpContext) *infra.HttpError {
 	path := strings.TrimPrefix(ctx.URL().Path, "session/")
 	if len(path) > 0 {
-		return ErrNotFound
+		return message.ErrNotFound
 	}
 
 	switch ctx.Method() {
@@ -52,5 +52,5 @@ func (h *sessionHandler) HandleRoot(ctx infra.HttpContext) *infra.HttpError {
 	case http.MethodDelete:
 		return h.signout(ctx)
 	}
-	return ErrNotFound
+	return message.ErrNotFound
 }
