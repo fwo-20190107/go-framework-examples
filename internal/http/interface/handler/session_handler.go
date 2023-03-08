@@ -1,8 +1,9 @@
 package handler
 
 import (
-	"context"
+	"examples/internal/http/interface/infra"
 	"examples/internal/http/logic"
+	"examples/internal/http/logic/iodata"
 	"examples/message"
 	"net/http"
 	"strings"
@@ -18,36 +19,34 @@ func NewSessionHandler(userLogic logic.UserLogic) *sessionHandler {
 	}
 }
 
-func (h *sessionHandler) signin(ctx context.Context, w http.ResponseWriter, r *http.Request) *handleError {
-	if err := r.ParseForm(); err != nil {
-		return &handleError{msg: message.ErrParseForm.Error(), code: http.StatusBadRequest}
+func (h *sessionHandler) signin(ctx infra.HttpContext) *infra.HttpError {
+	var in iodata.SigninInput
+	if err := ctx.Decode(&in); err != nil {
+		return &infra.HttpError{Msg: message.ErrParseForm.Error(), Code: http.StatusBadRequest}
 	}
 
-	if _, err := h.userLogic.Signin(ctx, "admin", "admin"); err != nil {
-		return &handleError{msg: "login failed", code: http.StatusUnauthorized}
+	if _, err := h.userLogic.Signin(ctx.Context(), in.LoginID, in.Password); err != nil {
+		return &infra.HttpError{Msg: "login failed", Code: http.StatusUnauthorized, Err: err}
 	}
 	return nil
 }
 
-func (h *sessionHandler) signout(ctx context.Context, w http.ResponseWriter, r *http.Request) *handleError {
-	h.userLogic.Signout(ctx)
+func (h *sessionHandler) signout(ctx infra.HttpContext) *infra.HttpError {
+	h.userLogic.Signout(ctx.Context())
 	return nil
 }
 
-func (h *sessionHandler) HandleRoot(w http.ResponseWriter, r *http.Request) *handleError {
-	path := strings.TrimPrefix(r.URL.Path, "session/")
+func (h *sessionHandler) HandleRoot(ctx infra.HttpContext) *infra.HttpError {
+	path := strings.TrimPrefix(ctx.URL().Path, "session/")
 	if len(path) > 0 {
 		return ErrNotFound
 	}
 
-	ctx := r.Context()
-	switch r.Method {
+	switch ctx.Method() {
 	case http.MethodPost:
-		return h.signin(ctx, w, r)
+		return h.signin(ctx)
 	case http.MethodDelete:
-		return h.signout(ctx, w, r)
-	default:
-		http.NotFound(w, r)
+		return h.signout(ctx)
 	}
-	return nil
+	return ErrNotFound
 }
