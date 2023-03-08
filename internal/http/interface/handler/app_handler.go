@@ -12,6 +12,8 @@ type handleError struct {
 type AppHandler func(w http.ResponseWriter, r *http.Request) *handleError
 
 func (fn AppHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
 	if err := fn(w, r); err != nil {
 		http.Error(w, err.msg, err.code)
 	}
