@@ -3,7 +3,10 @@ package main
 import (
 	"examples/internal/http/infra/routes"
 	"examples/internal/http/infra/sql"
-	"examples/internal/http/infra/sql/driver"
+	"examples/internal/http/infra/sql/engine"
+
+	// registry の init() で使用する変数を初期化している
+	// ↓ を宣言して初期化を済ませておく必要があります
 	_ "examples/internal/http/registry"
 	"fmt"
 	"net/http"
@@ -16,7 +19,8 @@ func main() {
 }
 
 func run() error {
-	con, err := driver.NewConnection("db/example.db")
+
+	con, err := engine.NewConnection("db/example.db")
 	if err != nil {
 		return err
 	}
