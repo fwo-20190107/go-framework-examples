@@ -19,4 +19,5 @@ type HttpContext interface {
 	Method() string
 	Decode(v any) error
 	WriteJSON(code int, body any) error
+	WriteError(code int, msg string) error
 }

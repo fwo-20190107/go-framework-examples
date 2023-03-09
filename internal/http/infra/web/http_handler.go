@@ -2,6 +2,8 @@ package web
 
 import (
 	"examples/internal/http/interface/infra"
+	"examples/internal/http/registry"
+	"fmt"
 	"net/http"
 )
 
@@ -12,7 +14,10 @@ func (fn HttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := newHttpContext(w, r)
 
 	if err := fn(ctx); err != nil {
-		http.Error(w, err.Msg, err.Code)
+		if err.Err != nil {
+			registry.Logger.Err(ctx.Context(), fmt.Sprint(err.Err))
+		}
+		ctx.WriteError(err.Code, err.Msg)
 	}
 }
 

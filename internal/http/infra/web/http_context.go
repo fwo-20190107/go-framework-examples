@@ -50,4 +50,10 @@ func (c *httpContext) WriteJSON(code int, body any) error {
 	return nil
 }
 
+func (c *httpContext) WriteError(code int, msg string) error {
+	return c.WriteJSON(code, struct {
+		Message string `json:"message"`
+	}{Message: msg})
+}
+
 var _ infra.HttpContext = (*httpContext)(nil)
