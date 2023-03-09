@@ -1,13 +1,13 @@
 package model
 
 type User struct {
-	UserID    int    `json:"user_id"`
-	Name      string `json:"name"`
-	Authority int8   `json:"authority"`
+	UserID    int    `db:"user_id"`
+	Name      string `db:"name"`
+	Authority int8   `db:"authority"`
 }
 
 type Login struct {
-	LoginID  string `json:"login_id"`
-	UserID   int    `json:"user_id"`
-	Password string `json:"password"`
+	LoginID  string `db:"login_id"`
+	UserID   int    `db:"user_id"`
+	Password string `db:"password"`
 }
