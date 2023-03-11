@@ -19,9 +19,16 @@ func main() {
 }
 
 func run() error {
-
-	con, err := engine.NewSqlite3("db/example.db")
+	schema := "../../db/example.db"
+	if err := engine.CreateDbFile(schema); err != nil {
+		return err
+	}
+	con, err := engine.NewSqlite3(schema)
 	if err != nil {
+		return err
+	}
+
+	if err := sql.InitializeDb(con); err != nil {
 		return err
 	}
 
