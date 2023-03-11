@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"examples/internal/http/interface/repository"
+
+	"github.com/tanimutomo/sqlfile"
 )
 
 type sqlHandler struct {
@@ -55,6 +57,17 @@ func (h *sqlHandler) Query(ctx context.Context, query string, args ...any) (*sql
 		return nil, err
 	}
 	return rows, nil
+}
+
+func InitializeDb(con *sql.DB) error {
+	s := sqlfile.New()
+	if err := s.Directory("../../testdata"); err != nil {
+		return err
+	}
+	if _, err := s.Exec(con); err != nil {
+		return err
+	}
+	return nil
 }
 
 var _ repository.SqlHandler = (*sqlHandler)(nil)

@@ -6,34 +6,7 @@ import (
 	"path/filepath"
 
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/tanimutomo/sqlfile"
 )
-
-func InitializeDb(schema string) error {
-	dir := filepath.Dir(schema)
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		if err := os.Mkdir(dir, 0755); err != nil {
-			return err
-		}
-	}
-	if _, err := os.Create(schema); err != nil {
-		return err
-	}
-
-	con, err := NewSqlite3(schema)
-	if err != nil {
-		return err
-	}
-
-	s := sqlfile.New()
-	if err := s.Directory("testdata"); err != nil {
-		return err
-	}
-	if _, err := s.Exec(con); err != nil {
-		return err
-	}
-	return nil
-}
 
 func NewSqlite3(schema string) (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", schema)
@@ -41,4 +14,17 @@ func NewSqlite3(schema string) (*sql.DB, error) {
 		return nil, err
 	}
 	return db, nil
+}
+
+func CreateDbFile(schema string) error {
+	dir := filepath.Dir(schema)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		if err := os.Mkdir(dir, 0766); err != nil {
+			return err
+		}
+	}
+	if _, err := os.Create(schema); err != nil {
+		return err
+	}
+	return nil
 }
