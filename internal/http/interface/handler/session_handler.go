@@ -29,9 +29,22 @@ func (h *sessionHandler) signin(ctx infra.HttpContext) *infra.HttpError {
 		return &infra.HttpError{Msg: err.Error(), Code: http.StatusBadRequest, Err: err}
 	}
 
-	if _, err := h.userLogic.Signin(ctx.Context(), in.LoginID, in.Password); err != nil {
+	user, err := h.userLogic.Signin(ctx.Context(), in.LoginID, in.Password)
+	if err != nil {
 		return &infra.HttpError{Msg: "login failed", Code: http.StatusUnauthorized, Err: err}
 	}
+
+	token, err := h.userLogic.PublishToken(ctx.Context(), user.UserID)
+	if err != nil {
+		return &infra.HttpError{Msg: "failed to publish token", Code: http.StatusInternalServerError, Err: err}
+	}
+
+	ctx.WriteJSON(http.StatusOK, &iodata.SigninOutput{
+		Token:     token,
+		UserID:    user.UserID,
+		Name:      user.Name,
+		Authority: user.Authority,
+	})
 	return nil
 }
 
@@ -41,7 +54,7 @@ func (h *sessionHandler) signout(ctx infra.HttpContext) *infra.HttpError {
 }
 
 func (h *sessionHandler) HandleRoot(ctx infra.HttpContext) *infra.HttpError {
-	path := strings.TrimPrefix(ctx.URL().Path, "session/")
+	path := strings.TrimPrefix(ctx.URL().Path, "/session")
 	if len(path) > 0 {
 		return message.ErrNotFound
 	}
