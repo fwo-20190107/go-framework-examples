@@ -20,7 +20,7 @@ func main() {
 
 func run() error {
 
-	con, err := engine.NewConnection("db/example.db")
+	con, err := engine.NewSqlite3("db/example.db")
 	if err != nil {
 		return err
 	}

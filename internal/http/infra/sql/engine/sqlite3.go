@@ -20,7 +20,7 @@ func InitializeDb(schema string) error {
 		return err
 	}
 
-	con, err := NewConnection(schema)
+	con, err := NewSqlite3(schema)
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func InitializeDb(schema string) error {
 	return nil
 }
 
-func NewConnection(schema string) (*sql.DB, error) {
+func NewSqlite3(schema string) (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", schema)
 	if err != nil {
 		return nil, err
