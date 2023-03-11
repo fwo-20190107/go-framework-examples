@@ -1,7 +1,7 @@
 package main
 
 import (
-	"examples/internal/http/infra/routes"
+	"examples/internal/http/infra/router"
 	"examples/internal/http/infra/sql"
 	"examples/internal/http/infra/sql/engine"
 
@@ -26,7 +26,7 @@ func run() error {
 	}
 
 	sqlh := sql.NewSqlHandler(con, con)
-	routes.SetRoute(sqlh)
+	router.SetRoute(sqlh)
 
 	return http.ListenAndServe(":8080", nil)
 }

@@ -1,4 +1,4 @@
-package routes
+package router
 
 import (
 	"examples/internal/http/infra/middleware"
