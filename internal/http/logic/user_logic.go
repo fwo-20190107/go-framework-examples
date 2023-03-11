@@ -12,7 +12,8 @@ import (
 )
 
 type UserLogic interface {
-	Signin(ctx context.Context, loginID, password string) (string, error)
+	Signin(ctx context.Context, loginID, password string) (*entity.User, error)
+	PublishToken(ctx context.Context, userID int) (string, error)
 	Signout(ctx context.Context)
 	GetUserByID(ctx context.Context, userID int) (*entity.User, error)
 	GetAllUsers(ctx context.Context) ([]entity.User, error)
@@ -28,31 +29,24 @@ func NewUserLogic(userRepository repository.UserRepository) *userLogic {
 	}
 }
 
-func (l *userLogic) Signin(ctx context.Context, loginID, password string) (string, error) {
+func (l *userLogic) Signin(ctx context.Context, loginID, password string) (*entity.User, error) {
 	login, err := l.userRepository.GetLoginByID(ctx, loginID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return "", message.ErrUserNotFound
+			return nil, message.ErrUserNotFound
 		}
-		return "", err
+		return nil, err
 	}
 
 	if login.Password != password {
-		return "", message.ErrUnmatchPassword
+		return nil, message.ErrUnmatchPassword
 	}
 
 	user, err := l.userRepository.GetUserByID(ctx, login.UserID)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-
-	token, err := registry.SessionManager.NewToken()
-	if err != nil {
-		return "", err
-	}
-	registry.SessionManager.AddSession(ctx, token, user.UserID)
-
-	return token, nil
+	return user, nil
 }
 
 func (l *userLogic) Signout(ctx context.Context) {
@@ -62,6 +56,16 @@ func (l *userLogic) Signout(ctx context.Context) {
 		return
 	}
 	registry.SessionManager.RevokeSession(ctx, token)
+}
+
+func (l *userLogic) PublishToken(ctx context.Context, userID int) (string, error) {
+	token, err := registry.SessionManager.NewToken()
+	if err != nil {
+		return "", err
+	}
+	registry.SessionManager.AddSession(ctx, token, userID)
+
+	return token, nil
 }
 
 func (l *userLogic) GetUserByID(ctx context.Context, userID int) (*entity.User, error) {
