@@ -30,7 +30,7 @@ func (s *localStore) Set(ctx context.Context, key, value any, ttl time.Duration)
 		return
 	}
 
-	sv := &storeValue{
+	sv := storeValue{
 		value: value,
 	}
 	if ttl > 0 {
@@ -42,7 +42,6 @@ func (s *localStore) Set(ctx context.Context, key, value any, ttl time.Duration)
 			}
 
 			select {
-			case <-ctx.Done():
 			case <-timer.t.C:
 			case <-ch:
 				// nothing todo
@@ -54,7 +53,7 @@ func (s *localStore) Set(ctx context.Context, key, value any, ttl time.Duration)
 			}
 		}(sv.ch)
 	}
-	s.store.Store(key, value)
+	s.store.Store(key, sv)
 }
 
 func (s *localStore) Get(ctx context.Context, key any) (any, bool) {
@@ -70,11 +69,11 @@ func (s *localStore) getsv(key any) (*storeValue, bool) {
 	if !ok {
 		return nil, ok
 	}
-	sv, ok := v.(*storeValue)
+	sv, ok := v.(storeValue)
 	if !ok {
 		return nil, ok
 	}
-	return sv, ok
+	return &sv, ok
 }
 
 func (s *localStore) Drop(ctx context.Context, key any) {
