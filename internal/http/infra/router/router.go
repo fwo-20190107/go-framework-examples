@@ -10,13 +10,21 @@ import (
 )
 
 func SetRoute(sqlh repository.SqlHandler) {
-	u := handler.NewUserHandler(logic.NewUserLogic(repository.NewUserRepository(sqlh)))
+	// repository
+	loginRepo := repository.NewLoginRepository(sqlh)
+	userRepo := repository.NewUserRepository(sqlh)
+
+	// logic
+	loginLogic := logic.NewLoginLogic(userRepo, loginRepo)
+	userLogic := logic.NewUserLogic(userRepo)
+
+	users := handler.NewUserHandler(userLogic)
 	{
-		http.Handle("/users", middleware.WithLogger(middleware.CheckToken(web.HttpHandler(u.HandleRoot))))
+		http.Handle("/users", middleware.WithLogger(middleware.CheckToken(web.HttpHandler(users.HandleRoot))))
 	}
 
-	a := handler.NewSessionHandler(logic.NewUserLogic(repository.NewUserRepository(sqlh)))
+	session := handler.NewSessionHandler(userLogic, loginLogic)
 	{
-		http.Handle("/session", middleware.WithLogger(web.HttpHandler(a.HandleRoot)))
+		http.Handle("/session", middleware.WithLogger(web.HttpHandler(session.HandleRoot)))
 	}
 }

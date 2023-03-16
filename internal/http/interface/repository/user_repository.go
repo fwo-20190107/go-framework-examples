@@ -15,7 +15,7 @@ func NewUserRepository(handler SqlHandler) *userRepository {
 	return &userRepository{handler}
 }
 
-func (r *userRepository) GetUserByID(ctx context.Context, userID int) (*entity.User, error) {
+func (r *userRepository) GetByID(ctx context.Context, userID int) (*entity.User, error) {
 	query := "SELECT * FROM user WHERE user_id = ?"
 	row, err := r.QueryRow(ctx, query, userID)
 	if err != nil {
@@ -33,7 +33,7 @@ func (r *userRepository) GetUserByID(ctx context.Context, userID int) (*entity.U
 	}, nil
 }
 
-func (r *userRepository) GetAllUsers(ctx context.Context) ([]entity.User, error) {
+func (r *userRepository) GetAll(ctx context.Context) ([]entity.User, error) {
 	query := "SELECT * FROM user"
 	rows, err := r.Query(ctx, query)
 	if err != nil {
@@ -59,39 +59,13 @@ func (r *userRepository) GetAllUsers(ctx context.Context) ([]entity.User, error)
 	return users, nil
 }
 
-func (r *userRepository) GetLoginByID(ctx context.Context, loginID string) (*entity.Login, error) {
-	query := "SELECT * FROM login WHERE login_id = ?"
-	row, err := r.QueryRow(ctx, query, loginID)
-	if err != nil {
-		return nil, err
-	}
-
-	var login model.Login
-	if err := row.Scan(&login.LoginID, &login.UserID, &login.Password); err != nil {
-		return nil, err
-	}
-	return &entity.Login{
-		LoginID:  login.LoginID,
-		UserID:   login.UserID,
-		Password: login.Password,
-	}, nil
-}
-
-func (r *userRepository) StoreUser(ctx context.Context, user entity.User) (int64, error) {
+func (r *userRepository) Store(ctx context.Context, user entity.User) (int64, error) {
 	query := "INSERT INTO user (`user_id`, `name`, `authority`) VALUES (?, ?, ?)"
 	result, err := r.Execute(ctx, query, user.UserID, user.Name, user.Authority)
 	if err != nil {
 		return 0, err
 	}
 	return result.LastInsertId()
-}
-
-func (r *userRepository) StoreLogin(ctx context.Context, login entity.Login) error {
-	query := "INSERT INTO login (`login_id`, `user_id`, `password`) VALUES (?, ?, ?)"
-	if _, err := r.Execute(ctx, query, login.LoginID, login.UserID, login.Password); err != nil {
-		return err
-	}
-	return nil
 }
 
 func (r *userRepository) ModifyAuthority(ctx context.Context, userID, authority int) error {

@@ -10,12 +10,14 @@ import (
 )
 
 type sessionHandler struct {
-	userLogic logic.UserLogic
+	userLogic  logic.UserLogic
+	loginLogic logic.LoginLogic
 }
 
-func NewSessionHandler(userLogic logic.UserLogic) *sessionHandler {
+func NewSessionHandler(userLogic logic.UserLogic, loginLogic logic.LoginLogic) *sessionHandler {
 	return &sessionHandler{
-		userLogic: userLogic,
+		userLogic:  userLogic,
+		loginLogic: loginLogic,
 	}
 }
 
@@ -29,12 +31,17 @@ func (h *sessionHandler) signin(ctx infra.HttpContext) *infra.HttpError {
 		return &infra.HttpError{Msg: err.Error(), Code: http.StatusBadRequest, Err: err}
 	}
 
-	user, err := h.userLogic.Signin(ctx.Context(), in.LoginID, in.Password)
+	userID, err := h.loginLogic.Signin(ctx.Context(), in.LoginID, in.Password)
 	if err != nil {
 		return &infra.HttpError{Msg: "login failed", Code: http.StatusUnauthorized, Err: err}
 	}
 
-	token, err := h.userLogic.PublishToken(ctx.Context(), user.UserID)
+	user, err := h.userLogic.GetByID(ctx.Context(), userID)
+	if err != nil {
+		return &infra.HttpError{Msg: "login user is not found", Code: http.StatusInternalServerError, Err: err}
+	}
+
+	token, err := h.loginLogic.PublishToken(ctx.Context(), user.UserID)
 	if err != nil {
 		return &infra.HttpError{Msg: "failed to publish token", Code: http.StatusInternalServerError, Err: err}
 	}
@@ -49,7 +56,7 @@ func (h *sessionHandler) signin(ctx infra.HttpContext) *infra.HttpError {
 }
 
 func (h *sessionHandler) signout(ctx infra.HttpContext) *infra.HttpError {
-	h.userLogic.Signout(ctx.Context())
+	h.loginLogic.Signout(ctx.Context())
 	return nil
 }
 

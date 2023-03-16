@@ -20,7 +20,7 @@ func NewUserHandler(userLogic logic.UserLogic) *userHandler {
 }
 
 func (h *userHandler) getUserByID(ctx infra.HttpContext) *infra.HttpError {
-	user, err := h.userLogic.GetUserByID(ctx.Context(), 1)
+	user, err := h.userLogic.GetByID(ctx.Context(), 1)
 	if err != nil {
 		var msg string
 		switch err {
