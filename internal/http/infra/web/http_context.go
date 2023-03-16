@@ -1,7 +1,6 @@
 package web
 
 import (
-	"context"
 	"encoding/json"
 	"examples/internal/http/interface/infra"
 	"net/http"
@@ -15,10 +14,6 @@ type httpContext struct {
 
 func newHttpContext(w http.ResponseWriter, r *http.Request) *httpContext {
 	return &httpContext{w: w, r: r}
-}
-
-func (c *httpContext) Context() context.Context {
-	return c.r.Context()
 }
 
 func (c *httpContext) URL() *url.URL {

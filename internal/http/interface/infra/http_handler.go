@@ -5,7 +5,7 @@ import (
 	"net/url"
 )
 
-type HttpHandler func(httpCtx HttpContext) *HttpError
+type HttpHandler func(ctx context.Context, httpCtx HttpContext) *HttpError
 
 type HttpError struct {
 	Code int
@@ -14,7 +14,6 @@ type HttpError struct {
 }
 
 type HttpContext interface {
-	Context() context.Context
 	URL() *url.URL
 	Method() string
 	Decode(v any) error
