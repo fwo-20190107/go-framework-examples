@@ -14,6 +14,7 @@ type localStore struct {
 type storeValue struct {
 	ch    chan struct{}
 	value any
+	once  sync.Once
 }
 
 type timer struct {
@@ -81,11 +82,7 @@ func (s *localStore) Drop(ctx context.Context, key any) {
 	if !ok {
 		return
 	}
-	if sv.ch != nil {
-		sv.ch <- struct{}{}
-	} else {
-		s.delete(key)
-	}
+	sv.close()
 }
 
 func (s *localStore) delete(key any) {
@@ -93,10 +90,12 @@ func (s *localStore) delete(key any) {
 	if !ok {
 		return
 	}
-	if sv.ch != nil {
-		close(sv.ch)
-	}
+	sv.close()
 	s.store.Delete(key)
+}
+
+func (v *storeValue) close() {
+	v.once.Do(func() { close(v.ch) })
 }
 
 var _ repository.LocalStore = (*localStore)(nil)
