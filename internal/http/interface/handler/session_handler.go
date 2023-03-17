@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"examples/internal/http/interface/infra"
 	"examples/internal/http/logic"
 	"examples/internal/http/logic/iodata"
@@ -21,9 +22,9 @@ func NewSessionHandler(userLogic logic.UserLogic, loginLogic logic.LoginLogic) *
 	}
 }
 
-func (h *sessionHandler) signin(ctx infra.HttpContext) *infra.HttpError {
+func (h *sessionHandler) signin(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
 	var in iodata.SigninInput
-	if err := ctx.Decode(&in); err != nil {
+	if err := httpCtx.Decode(&in); err != nil {
 		return &infra.HttpError{Msg: message.ErrParseForm.Error(), Code: http.StatusBadRequest}
 	}
 
@@ -31,22 +32,22 @@ func (h *sessionHandler) signin(ctx infra.HttpContext) *infra.HttpError {
 		return &infra.HttpError{Msg: err.Error(), Code: http.StatusBadRequest, Err: err}
 	}
 
-	userID, err := h.loginLogic.Signin(ctx.Context(), in.LoginID, in.Password)
+	userID, err := h.loginLogic.Signin(ctx, in.LoginID, in.Password)
 	if err != nil {
 		return &infra.HttpError{Msg: "login failed", Code: http.StatusUnauthorized, Err: err}
 	}
 
-	user, err := h.userLogic.GetByID(ctx.Context(), userID)
+	user, err := h.userLogic.GetByID(ctx, userID)
 	if err != nil {
 		return &infra.HttpError{Msg: "login user is not found", Code: http.StatusInternalServerError, Err: err}
 	}
 
-	token, err := h.loginLogic.PublishToken(ctx.Context(), user.UserID)
+	token, err := h.loginLogic.PublishToken(ctx, user.UserID)
 	if err != nil {
 		return &infra.HttpError{Msg: "failed to publish token", Code: http.StatusInternalServerError, Err: err}
 	}
 
-	ctx.WriteJSON(http.StatusOK, &iodata.SigninOutput{
+	httpCtx.WriteJSON(http.StatusOK, &iodata.SigninOutput{
 		Token:     token,
 		UserID:    user.UserID,
 		Name:      user.Name,
@@ -55,22 +56,22 @@ func (h *sessionHandler) signin(ctx infra.HttpContext) *infra.HttpError {
 	return nil
 }
 
-func (h *sessionHandler) signout(ctx infra.HttpContext) *infra.HttpError {
-	h.loginLogic.Signout(ctx.Context())
+func (h *sessionHandler) signout(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
+	h.loginLogic.Signout(ctx)
 	return nil
 }
 
-func (h *sessionHandler) HandleRoot(ctx infra.HttpContext) *infra.HttpError {
-	path := strings.TrimPrefix(ctx.URL().Path, "/session")
+func (h *sessionHandler) HandleRoot(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
+	path := strings.TrimPrefix(httpCtx.URL().Path, "/session")
 	if len(path) > 0 {
 		return message.ErrNotFound
 	}
 
-	switch ctx.Method() {
+	switch httpCtx.Method() {
 	case http.MethodPost:
-		return h.signin(ctx)
+		return h.signin(ctx, httpCtx)
 	case http.MethodDelete:
-		return h.signout(ctx)
+		return h.signout(ctx, httpCtx)
 	}
 	return message.ErrNotFound
 }
