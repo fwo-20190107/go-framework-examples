@@ -1,6 +1,7 @@
 package web
 
 import (
+	"examples/errors"
 	"examples/internal/http/interface/infra"
 	"examples/internal/http/registry"
 	"fmt"
@@ -15,10 +16,16 @@ func (fn HttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	httpCtx := newHttpContext(w, r)
 
 	if err := fn(ctx, httpCtx); err != nil {
+		status := errors.HTTPStatus(err.Err)
 		if err.Err != nil {
-			registry.Logger.Err(ctx, fmt.Sprint(err.Err))
+			switch {
+			case status >= 500:
+				registry.Logger.Err(ctx, fmt.Sprint(err.Err))
+			case status >= 400:
+				registry.Logger.Warn(ctx, fmt.Sprint(err.Err))
+			}
 		}
-		httpCtx.WriteError(err.Code, err.Msg)
+		httpCtx.WriteError(status, err.Response)
 	}
 }
 

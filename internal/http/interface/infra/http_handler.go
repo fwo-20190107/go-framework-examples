@@ -7,10 +7,14 @@ import (
 
 type HttpHandler func(ctx context.Context, httpCtx HttpContext) *HttpError
 
+type ErrorResponse struct {
+	Title string `json:"title"`
+	Body  string `json:"body"`
+}
+
 type HttpError struct {
-	Code int
-	Msg  string
-	Err  error
+	Response *ErrorResponse
+	Err      error
 }
 
 type HttpContext interface {
@@ -18,5 +22,5 @@ type HttpContext interface {
 	Method() string
 	Decode(v any) error
 	WriteJSON(code int, body any) error
-	WriteError(code int, msg string) error
+	WriteError(code int, res *ErrorResponse) error
 }

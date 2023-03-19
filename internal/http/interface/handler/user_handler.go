@@ -2,11 +2,10 @@ package handler
 
 import (
 	"context"
-	"database/sql"
+	"examples/code"
+	"examples/errors"
 	"examples/internal/http/interface/infra"
 	"examples/internal/http/logic"
-	"examples/message"
-	"fmt"
 	"net/http"
 )
 
@@ -23,18 +22,16 @@ func NewUserHandler(userLogic logic.UserLogic) *userHandler {
 func (h *userHandler) getUserByID(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
 	user, err := h.userLogic.GetByID(ctx, 1)
 	if err != nil {
-		var msg string
-		switch err {
-		case sql.ErrNoRows:
-			msg = fmt.Sprintf("user not found. userID=%d", 1)
-		default:
-			msg = err.Error()
+		r := ErrUnexpected
+		switch {
+		case errors.Is(err, code.ErrNotFound):
+			r = newErrorResponse("エラー", "ユーザーデータなし")
 		}
-		return &infra.HttpError{Msg: msg, Code: http.StatusInternalServerError}
+		return &infra.HttpError{Response: r, Err: err}
 	}
 
 	if err := httpCtx.WriteJSON(http.StatusOK, user); err != nil {
-		return &infra.HttpError{Msg: err.Error(), Code: http.StatusInternalServerError}
+		return &infra.HttpError{Response: ErrUnexpected, Err: err}
 	}
 	return nil
 }
@@ -44,5 +41,5 @@ func (h *userHandler) HandleRoot(ctx context.Context, httpCtx infra.HttpContext)
 	case http.MethodGet:
 		return h.getUserByID(ctx, httpCtx)
 	}
-	return message.ErrNotFound
+	return nil
 }

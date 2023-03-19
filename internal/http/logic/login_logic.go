@@ -3,11 +3,11 @@ package logic
 import (
 	"context"
 	"database/sql"
-	"errors"
+	"examples/code"
+	"examples/errors"
 	"examples/internal/http/logic/repository"
 	"examples/internal/http/registry"
 	"examples/internal/http/util"
-	"examples/message"
 )
 
 type LoginLogic interface {
@@ -30,13 +30,13 @@ func (l *loginLogic) Signin(ctx context.Context, loginID, password string) (int,
 	login, err := l.loginRepository.GetByID(ctx, loginID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return 0, message.ErrUserNotFound
+			return 0, errors.Errorf(code.ErrNotFound, err.Error())
 		}
 		return 0, err
 	}
 
 	if login.Password != password {
-		return 0, message.ErrUnmatchPassword
+		return 0, errors.Errorf(code.ErrBadRequest, "wrong loginID or password")
 	}
 
 	if err := l.loginRepository.ModifyLastSigned(ctx, login.LoginID); err != nil {
