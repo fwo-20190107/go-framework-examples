@@ -23,6 +23,16 @@ func Errorf(c *code.ErrorCode, format string, args ...any) error {
 	}
 }
 
+func Wrap(c *code.ErrorCode, err error) error {
+	if err != nil {
+		return nil
+	}
+	return &applicationError{
+		code: c,
+		err:  err,
+	}
+}
+
 func (e *applicationError) Is(err error) bool {
 	return errors.Is(e.code, err)
 }
