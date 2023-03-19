@@ -7,7 +7,6 @@ import (
 	"examples/internal/http/interface/infra"
 	"net/http"
 	"net/url"
-	"path/filepath"
 	"strings"
 )
 
@@ -33,9 +32,10 @@ func (c *httpContext) Header() http.Header {
 }
 
 func (c *httpContext) Vars(prefix string, keys ...string) (map[string]string, error) {
-	path := strings.TrimPrefix(c.URL().Path, prefix)
-
-	param := filepath.SplitList(path)
+	// パス指定漏れの対策
+	// /paths でも /paths/ でも同じ結果を得られるようにしておく
+	path := strings.TrimPrefix(strings.TrimPrefix(c.URL().Path, prefix), "/")
+	param := strings.Split(path, "/")
 	if len(param) > len(keys) {
 		return nil, errors.Errorf(code.ErrBadRequest, "invalid request path: %s", c.URL().Path)
 	}
