@@ -8,7 +8,6 @@ import (
 	"examples/internal/http/logic"
 	"examples/internal/http/logic/iodata"
 	"net/http"
-	"strings"
 )
 
 type sessionHandler struct {
@@ -75,11 +74,6 @@ func (h *sessionHandler) signout(ctx context.Context, httpCtx infra.HttpContext)
 }
 
 func (h *sessionHandler) HandleRoot(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
-	path := strings.TrimPrefix(httpCtx.URL().Path, "/session")
-	if len(path) > 0 {
-		return nil
-	}
-
 	switch httpCtx.Method() {
 	case http.MethodPost:
 		return h.signin(ctx, httpCtx)
