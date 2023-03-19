@@ -9,7 +9,7 @@ type HttpHandler func(ctx context.Context, httpCtx HttpContext) *HttpError
 
 type ErrorResponse struct {
 	Title string `json:"title"`
-	Body  string `json:"body"`
+	Body  any    `json:"body"`
 }
 
 type HttpError struct {
