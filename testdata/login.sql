@@ -1,7 +1,7 @@
 CREATE TABLE login (
     `login_id` TEXT NOT NULL PRIMARY KEY,
     `user_id` INTEGER NOT NULL,
-    `last_signed_at` TEXT,
+    `last_signed_at` DATETIME,
     `password` TEXT NOT NULL
 );
 
