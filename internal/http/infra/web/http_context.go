@@ -28,6 +28,10 @@ func (c *httpContext) Method() string {
 	return c.r.Method
 }
 
+func (c *httpContext) Header() http.Header {
+	return c.r.Header
+}
+
 func (c *httpContext) Vars(prefix string, keys ...string) (map[string]string, error) {
 	path := strings.TrimPrefix(c.URL().Path, prefix)
 

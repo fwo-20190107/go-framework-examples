@@ -20,7 +20,7 @@ func SetRoute(sqlh repository.SqlHandler) {
 
 	users := handler.NewUserHandler(userLogic)
 	{
-		http.Handle("/users", middleware.WithLogger(middleware.CheckToken(web.HttpHandler(users.HandleRoot))))
+		http.Handle("/users/", middleware.WithLogger(web.HttpHandler(middleware.CheckToken(users.HandleRoot))))
 	}
 
 	session := handler.NewSessionHandler(userLogic, loginLogic)

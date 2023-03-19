@@ -2,6 +2,7 @@ package infra
 
 import (
 	"context"
+	"net/http"
 	"net/url"
 )
 
@@ -20,6 +21,7 @@ type HttpError struct {
 type HttpContext interface {
 	URL() *url.URL
 	Method() string
+	Header() http.Header
 	Vars(prefix string, keys ...string) (map[string]string, error)
 	Decode(v any) error
 	WriteJSON(code int, body any) error
