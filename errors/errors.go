@@ -29,7 +29,7 @@ func Wrap(c *code.ErrorCode, err error) error {
 	}
 	return &applicationError{
 		code: c,
-		err:  err,
+		err:  errors.WithStack(err),
 	}
 }
 
@@ -38,7 +38,7 @@ func (e *applicationError) Is(err error) bool {
 }
 
 func (e *applicationError) Error() string {
-	return fmt.Sprintf("Code: %s, Msg: %s", e.code, e.err)
+	return fmt.Sprintf("Code: %s, Msg: %+v", e.code, e.err)
 }
 
 func Is(err, target error) bool {
