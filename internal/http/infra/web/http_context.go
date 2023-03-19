@@ -7,6 +7,8 @@ import (
 	"examples/internal/http/interface/infra"
 	"net/http"
 	"net/url"
+	"path/filepath"
+	"strings"
 )
 
 type httpContext struct {
@@ -24,6 +26,21 @@ func (c *httpContext) URL() *url.URL {
 
 func (c *httpContext) Method() string {
 	return c.r.Method
+}
+
+func (c *httpContext) Vars(prefix string, keys ...string) (map[string]string, error) {
+	path := strings.TrimPrefix(c.URL().Path, prefix)
+
+	param := filepath.SplitList(path)
+	if len(param) != len(keys) {
+		return nil, errors.Errorf(code.ErrBadRequest, "invalid request path: %s", c.URL().Path)
+	}
+
+	vars := make(map[string]string, len(param))
+	for i, p := range param {
+		vars[keys[i]] = p
+	}
+	return vars, nil
 }
 
 func (c *httpContext) Decode(v any) error {
