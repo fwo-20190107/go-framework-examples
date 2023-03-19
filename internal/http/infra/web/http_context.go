@@ -32,7 +32,7 @@ func (c *httpContext) Vars(prefix string, keys ...string) (map[string]string, er
 	path := strings.TrimPrefix(c.URL().Path, prefix)
 
 	param := filepath.SplitList(path)
-	if len(param) != len(keys) {
+	if len(param) > len(keys) {
 		return nil, errors.Errorf(code.ErrBadRequest, "invalid request path: %s", c.URL().Path)
 	}
 
