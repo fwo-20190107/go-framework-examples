@@ -3,7 +3,7 @@ package sql
 import (
 	"context"
 	"database/sql"
-	"examples/internal/http/interface/repository"
+	"examples/internal/http/interface/infra"
 
 	"github.com/tanimutomo/sqlfile"
 )
@@ -70,4 +70,4 @@ func InitializeDb(con *sql.DB) error {
 	return nil
 }
 
-var _ repository.SqlHandler = (*sqlHandler)(nil)
+var _ infra.SqlHandler = (*sqlHandler)(nil)
