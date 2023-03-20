@@ -11,18 +11,26 @@ import (
 )
 
 type sessionHandler struct {
-	userLogic  logic.UserLogic
-	loginLogic logic.LoginLogic
+	userLogic    logic.UserLogic
+	sessionLogic logic.SessionLogic
 }
 
-func NewSessionHandler(userLogic logic.UserLogic, loginLogic logic.LoginLogic) *sessionHandler {
+func NewSessionHandler(userLogic logic.UserLogic, sessionLogic logic.SessionLogic) *sessionHandler {
 	return &sessionHandler{
-		userLogic:  userLogic,
-		loginLogic: loginLogic,
+		userLogic:    userLogic,
+		sessionLogic: sessionLogic,
 	}
 }
 
-func (h *sessionHandler) signin(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
+func (h *sessionHandler) Signup(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
+	return nil
+}
+
+func (h *sessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
+	if httpCtx.Method() != http.MethodPost {
+		return &infra.HttpError{Response: ErrPathNotExist}
+	}
+
 	var in iodata.SigninInput
 	if err := httpCtx.Decode(&in); err != nil {
 		r := newErrorResponse("クライアントエラー", "リクエストされた値の取得に失敗しました")
@@ -33,7 +41,7 @@ func (h *sessionHandler) signin(ctx context.Context, httpCtx infra.HttpContext) 
 		return &infra.HttpError{Response: ErrValidParam, Err: err}
 	}
 
-	userID, err := h.loginLogic.Signin(ctx, in.LoginID, in.Password)
+	userID, err := h.sessionLogic.Signin(ctx, in.LoginID, in.Password)
 	if err != nil {
 		// サインイン失敗時は、後の攻撃を抑制するため詳細のエラーは返却しない
 		// e.g. ログインIDが存在しない / パスワードが不一致
@@ -53,9 +61,9 @@ func (h *sessionHandler) signin(ctx context.Context, httpCtx infra.HttpContext) 
 		return &infra.HttpError{Response: r, Err: err}
 	}
 
-	token, err := h.loginLogic.PublishToken(ctx, user.UserID)
+	token, err := h.sessionLogic.Start(ctx, user.UserID)
 	if err != nil {
-		r := newErrorResponse("サーバーエラー", "ログイントークンが発行されませんでした")
+		r := newErrorResponse("サーバーエラー", "ログイントークンの発行に失敗しました")
 		return &infra.HttpError{Response: r, Err: err}
 	}
 
@@ -68,17 +76,11 @@ func (h *sessionHandler) signin(ctx context.Context, httpCtx infra.HttpContext) 
 	return nil
 }
 
-func (h *sessionHandler) signout(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
-	h.loginLogic.Signout(ctx)
-	return nil
-}
-
-func (h *sessionHandler) HandleRoot(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
-	switch httpCtx.Method() {
-	case http.MethodPost:
-		return h.signin(ctx, httpCtx)
-	case http.MethodDelete:
-		return h.signout(ctx, httpCtx)
+func (h *sessionHandler) Signout(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
+	if httpCtx.Method() != http.MethodDelete {
+		return &infra.HttpError{Response: ErrPathNotExist}
 	}
+
+	h.sessionLogic.Signout(ctx)
 	return nil
 }
