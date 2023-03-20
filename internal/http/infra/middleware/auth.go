@@ -5,14 +5,21 @@ import (
 	"examples/code"
 	"examples/errors"
 	"examples/internal/http/interface/infra"
-	"examples/internal/http/registry"
+	"examples/internal/http/logic/repository"
 	"examples/internal/http/util"
-	"net/http"
 )
 
 const HEADER_AUTHORIZATION = "Authorization"
 
-func CheckToken(next infra.HttpHandler) infra.HttpHandler {
+type AuthMiddleware struct {
+	sessionRepository repository.SessionRepository
+}
+
+func NewAuthMiddleware(sessionRepository repository.SessionRepository) *AuthMiddleware {
+	return &AuthMiddleware{sessionRepository: sessionRepository}
+}
+
+func (m *AuthMiddleware) CheckToken(next infra.HttpHandler) infra.HttpHandler {
 	return func(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
 		token := httpCtx.Header().Get(HEADER_AUTHORIZATION)
 		if len(token) == 0 {
@@ -23,7 +30,7 @@ func CheckToken(next infra.HttpHandler) infra.HttpHandler {
 			}
 			return &infra.HttpError{Response: r, Err: err}
 		} else {
-			userID, ok := registry.SessionManager.Load(ctx, token)
+			userID, ok := m.sessionRepository.Get(ctx, token)
 			if !ok {
 				err := errors.Errorf(code.ErrUnauthorized, "illegal token")
 				r := &infra.ErrorResponse{
@@ -36,8 +43,4 @@ func CheckToken(next infra.HttpHandler) infra.HttpHandler {
 		}
 		return next(ctx, httpCtx)
 	}
-}
-
-func unauthorized(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "unauthorized", http.StatusUnauthorized)
 }
