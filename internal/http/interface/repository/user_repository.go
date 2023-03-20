@@ -3,15 +3,16 @@ package repository
 import (
 	"context"
 	"examples/internal/http/entity"
+	"examples/internal/http/interface/infra"
 	"examples/internal/http/interface/repository/model"
 	"examples/internal/http/logic/repository"
 )
 
 type userRepository struct {
-	SqlHandler
+	infra.SqlHandler
 }
 
-func NewUserRepository(handler SqlHandler) *userRepository {
+func NewUserRepository(handler infra.SqlHandler) *userRepository {
 	return &userRepository{handler}
 }
 

@@ -3,16 +3,17 @@ package repository
 import (
 	"context"
 	"examples/internal/http/entity"
+	"examples/internal/http/interface/infra"
 	"examples/internal/http/interface/repository/model"
 	"examples/internal/http/logic/repository"
 	"time"
 )
 
 type loginRepository struct {
-	SqlHandler
+	infra.SqlHandler
 }
 
-func NewLoginRepository(handler SqlHandler) *loginRepository {
+func NewLoginRepository(handler infra.SqlHandler) *loginRepository {
 	return &loginRepository{handler}
 }
 
