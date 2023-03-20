@@ -5,15 +5,20 @@ import (
 	"examples/internal/http/infra/web"
 	"examples/internal/http/registry"
 	"fmt"
+	"io"
 	"net/http"
-	"os"
 
 	"github.com/rs/zerolog"
 )
 
-var logger zerolog.Logger
+type loggerMiddleware struct {
+	logger zerolog.Logger
+}
 
-func WithLogger(next http.Handler) http.HandlerFunc {
+func NewLoggerMiddleware(w io.Writer) *loggerMiddleware {
+	return &loggerMiddleware{logger: zerolog.New(w)}
+}
+func (m *loggerMiddleware) WithLogger(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		writer := web.NewResponseWriter(w, r)
 
@@ -25,10 +30,6 @@ func WithLogger(next http.Handler) http.HandlerFunc {
 		if err := registry.Logger.Send(ctx); err != nil {
 			fmt.Println(err)
 		}
-		logger.Info().Object("accesslog", writer).Send()
+		m.logger.Info().Object("accesslog", writer).Send()
 	}
-}
-
-func init() {
-	logger = zerolog.New(os.Stdout)
 }

@@ -9,6 +9,7 @@ import (
 	"examples/internal/http/interface/repository"
 	"examples/internal/http/logic"
 	"net/http"
+	"os"
 )
 
 func SetRoute(sqlh infra.SqlHandler) {
@@ -22,19 +23,20 @@ func SetRoute(sqlh infra.SqlHandler) {
 	sessionLogic := logic.NewSessionLogic(sessionRepo, loginRepo)
 
 	// middleware
+	loggerMid := middleware.NewLoggerMiddleware(os.Stdout)
 	authMid := middleware.NewAuthMiddleware(sessionRepo)
 
 	// handler
 	users := handler.NewUserHandler(userLogic)
 	{
-		http.Handle("/users/", middleware.WithLogger(web.HttpHandler(authMid.CheckToken(users.HandleRoot))))
+		http.Handle("/users/", loggerMid.WithLogger(web.HttpHandler(authMid.CheckToken(users.HandleRoot))))
 	}
 
 	session := handler.NewSessionHandler(userLogic, sessionLogic)
 	{
 		// サインアップ、サインインはトークン取得前なのでチェックを行わない
-		http.Handle("/signup", middleware.WithLogger(web.HttpHandler(session.Signup)))
-		http.Handle("/signin", middleware.WithLogger(web.HttpHandler(session.Signin)))
-		http.Handle("/signout", middleware.WithLogger(web.HttpHandler(authMid.CheckToken(session.Signin))))
+		http.Handle("/signup", loggerMid.WithLogger(web.HttpHandler(session.Signup)))
+		http.Handle("/signin", loggerMid.WithLogger(web.HttpHandler(session.Signin)))
+		http.Handle("/signout", loggerMid.WithLogger(web.HttpHandler(authMid.CheckToken(session.Signin))))
 	}
 }
