@@ -2,7 +2,7 @@ package cache
 
 import (
 	"context"
-	"examples/internal/http/interface/repository"
+	"examples/internal/http/interface/infra"
 	"sync"
 	"time"
 )
@@ -98,4 +98,4 @@ func (v *storeValue) close() {
 	v.once.Do(func() { close(v.ch) })
 }
 
-var _ repository.LocalStore = (*localStore)(nil)
+var _ infra.LocalStore = (*localStore)(nil)
