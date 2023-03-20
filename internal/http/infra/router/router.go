@@ -29,14 +29,14 @@ func SetRoute(sqlh infra.SqlHandler) {
 	// handler
 	users := handler.NewUserHandler(userLogic)
 	{
+		http.Handle("/signup", loggerMid.WithLogger(web.HttpHandler(users.Signup)))
 		http.Handle("/users/", loggerMid.WithLogger(web.HttpHandler(authMid.CheckToken(users.HandleRoot))))
 	}
 
 	session := handler.NewSessionHandler(userLogic, sessionLogic)
 	{
 		// サインアップ、サインインはトークン取得前なのでチェックを行わない
-		http.Handle("/signup", loggerMid.WithLogger(web.HttpHandler(session.Signup)))
 		http.Handle("/signin", loggerMid.WithLogger(web.HttpHandler(session.Signin)))
-		http.Handle("/signout", loggerMid.WithLogger(web.HttpHandler(authMid.CheckToken(session.Signin))))
+		http.Handle("/signout", loggerMid.WithLogger(web.HttpHandler(authMid.CheckToken(session.Signout))))
 	}
 }

@@ -20,6 +20,10 @@ func NewUserHandler(userLogic logic.UserLogic) *userHandler {
 	}
 }
 
+func (h *userHandler) Signup(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
+	return nil
+}
+
 func (h *userHandler) getUserByID(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
 	vars, err := httpCtx.Vars("/users", "user_id")
 	if err != nil {

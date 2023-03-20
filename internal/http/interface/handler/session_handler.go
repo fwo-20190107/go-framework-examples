@@ -22,10 +22,6 @@ func NewSessionHandler(userLogic logic.UserLogic, sessionLogic logic.SessionLogi
 	}
 }
 
-func (h *sessionHandler) Signup(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
-	return nil
-}
-
 func (h *sessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
 	if httpCtx.Method() != http.MethodPost {
 		return &infra.HttpError{Response: ErrPathNotExist}
