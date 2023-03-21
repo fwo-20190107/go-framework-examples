@@ -10,6 +10,10 @@ import (
 	"examples/internal/http/logic"
 	"net/http"
 	"os"
+
+	_ "examples/docs"
+
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func SetRoute(sqlh infra.SqlHandler) {
@@ -39,4 +43,7 @@ func SetRoute(sqlh infra.SqlHandler) {
 		http.Handle("/signin", loggerMid.WithLogger(web.HttpHandler(session.Signin)))
 		http.Handle("/signout", loggerMid.WithLogger(web.HttpHandler(authMid.CheckToken(session.Signout))))
 	}
+
+	// swagger UI
+	http.Handle("/swagger/", httpSwagger.Handler(httpSwagger.URL("http://localhost:8080/swagger/doc.json")))
 }

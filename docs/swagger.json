@@ -1,0 +1,24 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Framework examples for Go language.",
+        "title": "Go Web Framework Examples.",
+        "contact": {},
+        "license": {
+            "name": "MIT License",
+            "url": "https://github.com/ebiy0rom0/go-framework-examples/blob/develop/LICENSE"
+        },
+        "version": "1.0.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {},
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "Paste the token contained in the /signin response.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

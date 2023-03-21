@@ -1,0 +1,18 @@
+basePath: /
+host: localhost:8080
+info:
+  contact: {}
+  description: Framework examples for Go language.
+  license:
+    name: MIT License
+    url: https://github.com/ebiy0rom0/go-framework-examples/blob/develop/LICENSE
+  title: Go Web Framework Examples.
+  version: 1.0.0
+paths: {}
+securityDefinitions:
+  Bearer:
+    description: Paste the token contained in the /signin response.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
