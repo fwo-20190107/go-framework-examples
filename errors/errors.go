@@ -24,7 +24,7 @@ func Errorf(c *code.ErrorCode, format string, args ...any) error {
 }
 
 func Wrap(c *code.ErrorCode, err error) error {
-	if err != nil {
+	if err != nil || errors.Is(c, code.ErrOK) {
 		return nil
 	}
 	return &applicationError{
