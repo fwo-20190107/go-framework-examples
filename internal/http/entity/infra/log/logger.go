@@ -1,4 +1,5 @@
-package infra
+//go:generate stringer -type LogLevel logger.go
+package log
 
 import (
 	"context"
@@ -7,11 +8,11 @@ import (
 type LogLevel int
 
 const (
-	LogLevelInfo LogLevel = iota + 1
-	LogLevelWarn
-	LogLevelErr
-	LogLevelFatal
-	LogLevelDebug
+	Info LogLevel = iota + 1
+	Warn
+	Error
+	Fatal
+	Debug
 )
 
 type Logger interface {
@@ -22,22 +23,4 @@ type Logger interface {
 	Debug(ctx context.Context, msg string) error
 	Fatal(ctx context.Context, msg string) error
 	Send(ctx context.Context) error
-}
-
-func (l LogLevel) String() (s string) {
-	switch l {
-	case LogLevelInfo:
-		s = "INFO"
-	case LogLevelWarn:
-		s = "WARNING"
-	case LogLevelErr:
-		s = "ERROR"
-	case LogLevelFatal:
-		s = "FATAL"
-	case LogLevelDebug:
-		s = "DEBUG"
-	default:
-		s = "NONE"
-	}
-	return
 }

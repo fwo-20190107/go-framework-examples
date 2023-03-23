@@ -1,12 +1,12 @@
 package registry
 
 import (
-	"examples/internal/http/entity/infra"
+	ILog "examples/internal/http/entity/infra/log"
 	"examples/internal/http/infra/log"
 	"os"
 )
 
-var Logger infra.Logger
+var Logger ILog.Logger
 
 func init() {
 	Logger = log.InitLogger(os.Stdout)

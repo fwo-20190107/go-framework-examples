@@ -3,7 +3,7 @@ package log
 import (
 	"context"
 	"errors"
-	"examples/internal/http/entity/infra"
+	"examples/internal/http/entity/infra/log"
 	"fmt"
 	"io"
 )
@@ -15,7 +15,7 @@ type logger struct {
 }
 
 type logDetail struct {
-	level infra.LogLevel
+	level log.LogLevel
 	msg   string
 }
 
@@ -37,7 +37,7 @@ func getLogDetail(ctx context.Context) (*logDetail, error) {
 	return ins, nil
 }
 
-func (l *logger) Log(ctx context.Context, msg string, level infra.LogLevel) error {
+func (l *logger) Log(ctx context.Context, msg string, level log.LogLevel) error {
 	detail, err := getLogDetail(ctx)
 	if err != nil {
 		return err
@@ -53,23 +53,23 @@ func (l *logger) Log(ctx context.Context, msg string, level infra.LogLevel) erro
 }
 
 func (l *logger) Info(ctx context.Context, msg string) error {
-	return l.Log(ctx, msg, infra.LogLevelInfo)
+	return l.Log(ctx, msg, log.Info)
 }
 
 func (l *logger) Warn(ctx context.Context, msg string) error {
-	return l.Log(ctx, msg, infra.LogLevelWarn)
+	return l.Log(ctx, msg, log.Warn)
 }
 
 func (l *logger) Err(ctx context.Context, msg string) error {
-	return l.Log(ctx, msg, infra.LogLevelErr)
+	return l.Log(ctx, msg, log.Error)
 }
 
 func (l *logger) Debug(ctx context.Context, msg string) error {
-	return l.Log(ctx, msg, infra.LogLevelDebug)
+	return l.Log(ctx, msg, log.Debug)
 }
 
 func (l *logger) Fatal(ctx context.Context, msg string) error {
-	return l.Log(ctx, msg, infra.LogLevelFatal)
+	return l.Log(ctx, msg, log.Fatal)
 }
 
 func (l *logger) Send(ctx context.Context) error {
@@ -84,4 +84,4 @@ func (l *logger) Send(ctx context.Context) error {
 	return nil
 }
 
-var _ infra.Logger = (*logger)(nil)
+var _ log.Logger = (*logger)(nil)
