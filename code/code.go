@@ -7,21 +7,21 @@ type ErrorCode struct {
 }
 
 var (
-	ErrOK = new("ok")
+	ErrOK = newErrorCode("ok")
 
-	ErrBadRequest   = new("bad request")
-	ErrUnauthorized = new("unauthorized")
-	ErrValidParam   = new("valid parameter")
-	ErrNotFound     = new("not found")
-	ErrOutOfTerm    = new("out of term")
+	ErrBadRequest   = newErrorCode("bad request")
+	ErrUnauthorized = newErrorCode("unauthorized")
+	ErrValidParam   = newErrorCode("valid parameter")
+	ErrNotFound     = newErrorCode("not found")
+	ErrOutOfTerm    = newErrorCode("out of term")
 
-	ErrDatabase = new("database error")
-	ErrInternal = new("internal error")
+	ErrDatabase = newErrorCode("database error")
+	ErrInternal = newErrorCode("internal error")
 
-	ErrUnknown = new("unknown error")
+	ErrUnknown = newErrorCode("unknown error")
 )
 
-func new(msg string) *ErrorCode {
+func newErrorCode(msg string) *ErrorCode {
 	return &ErrorCode{err: errors.New(msg)}
 }
 
