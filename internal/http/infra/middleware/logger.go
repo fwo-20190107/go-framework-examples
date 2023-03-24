@@ -18,6 +18,7 @@ type loggerMiddleware struct {
 func NewLoggerMiddleware(w io.Writer) *loggerMiddleware {
 	return &loggerMiddleware{logger: zerolog.New(w)}
 }
+
 func (m *loggerMiddleware) WithLogger(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		writer := web.NewResponseWriter(w, r)
