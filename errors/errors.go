@@ -9,11 +9,11 @@ import (
 )
 
 type applicationError struct {
-	code error
+	code code.ErrorCode
 	err  error
 }
 
-func Errorf(c *code.ErrorCode, format string, args ...any) error {
+func Errorf(c code.ErrorCode, format string, args ...any) error {
 	if errors.Is(c, code.ErrOK) {
 		return nil
 	}
@@ -23,8 +23,8 @@ func Errorf(c *code.ErrorCode, format string, args ...any) error {
 	}
 }
 
-func Wrap(c *code.ErrorCode, err error) error {
-	if err != nil || errors.Is(c, code.ErrOK) {
+func Wrap(c code.ErrorCode, err error) error {
+	if err == nil || errors.Is(c, code.ErrOK) {
 		return nil
 	}
 	return &applicationError{

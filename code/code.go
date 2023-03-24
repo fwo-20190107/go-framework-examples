@@ -1,36 +1,24 @@
 package code
 
-import "errors"
-
-type ErrorCode struct {
-	err error
-}
+type ErrorCode string
 
 var (
-	ErrOK = newErrorCode("ok")
+	ErrOK ErrorCode = "ok"
 
-	ErrBadRequest   = newErrorCode("bad request")
-	ErrUnauthorized = newErrorCode("unauthorized")
-	ErrValidParam   = newErrorCode("valid parameter")
-	ErrNotFound     = newErrorCode("not found")
-	ErrOutOfTerm    = newErrorCode("out of term")
+	ErrBadRequest   ErrorCode = "bad request"
+	ErrUnauthorized ErrorCode = "unauthorized"
+	ErrValidParam   ErrorCode = "valid parameter"
+	ErrNotFound     ErrorCode = "not found"
+	ErrOutOfTerm    ErrorCode = "out of term"
 
-	ErrDatabase = newErrorCode("database error")
-	ErrInternal = newErrorCode("internal error")
+	ErrDatabase ErrorCode = "database error"
+	ErrInternal ErrorCode = "internal error"
 
-	ErrUnknown = newErrorCode("unknown error")
+	ErrUnknown ErrorCode = "unknown error"
 )
 
-func newErrorCode(msg string) *ErrorCode {
-	return &ErrorCode{err: errors.New(msg)}
-}
-
-func (e *ErrorCode) Is(err error) bool {
-	return errors.Is(e.err, err)
-}
-
-func (e *ErrorCode) Error() string {
-	return e.err.Error()
+func (e ErrorCode) Error() string {
+	return string(e)
 }
 
 var _ error = (*ErrorCode)(nil)
