@@ -30,18 +30,23 @@ func SetRoute(sqlh infra.SqlHandler) {
 	loggerMid := middleware.NewLoggerMiddleware(os.Stdout)
 	authMid := middleware.NewAuthMiddleware(sessionRepo)
 
+	// ミドルウェアのラップが重なって見にくいので、デフォルトで使用するハンドラーとして先に定義しておく
+	defaultHandler := func(fn infra.HttpHandler) http.HandlerFunc {
+		return loggerMid.WithLogger(middleware.WithRecover(web.HttpHandler(fn)))
+	}
+
 	// handler
 	users := handler.NewUserHandler(userLogic)
 	{
-		http.Handle("/signup", loggerMid.WithLogger(web.HttpHandler(users.Signup)))
-		http.Handle("/users/", loggerMid.WithLogger(web.HttpHandler(authMid.CheckToken(users.HandleRoot))))
+		http.Handle("/signup", defaultHandler(users.Signup))
+		http.Handle("/users/", defaultHandler(authMid.CheckToken(users.HandleRoot)))
 	}
 
 	session := handler.NewSessionHandler(userLogic, sessionLogic)
 	{
 		// サインアップ、サインインはトークン取得前なのでチェックを行わない
-		http.Handle("/signin", loggerMid.WithLogger(web.HttpHandler(session.Signin)))
-		http.Handle("/signout", loggerMid.WithLogger(web.HttpHandler(authMid.CheckToken(session.Signout))))
+		http.Handle("/signin", defaultHandler(session.Signin))
+		http.Handle("/signout", defaultHandler(authMid.CheckToken(session.Signout)))
 	}
 
 	// swagger UI
