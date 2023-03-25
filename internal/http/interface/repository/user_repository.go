@@ -69,12 +69,16 @@ func (r *userRepository) GetAll(ctx context.Context) ([]entity.User, error) {
 }
 
 func (r *userRepository) Store(ctx context.Context, user *entity.User) (int64, error) {
-	query := "INSERT INTO user (`name`, `authority`) VALUES (?, ?, ?)"
+	query := "INSERT INTO user (`name`, `authority`) VALUES (?, ?)"
 	result, err := r.Execute(ctx, query, user.Name, user.Authority)
 	if err != nil {
 		return 0, err
 	}
-	return result.LastInsertId()
+	userID, err := result.LastInsertId()
+	if err != nil {
+		return 0, errors.Wrap(code.ErrDatabase, err)
+	}
+	return userID, nil
 }
 
 func (r *userRepository) ModifyAuthority(ctx context.Context, userID, authority int) error {
