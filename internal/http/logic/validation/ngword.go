@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"regexp"
 
-	validation "github.com/go-ozzo/ozzo-validation"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 var NgWord = &ngWord{message: "contains prohibited words"}
