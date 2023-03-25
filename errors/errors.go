@@ -19,7 +19,8 @@ func Errorf(c code.ErrorCode, format string, args ...any) error {
 	}
 	return &applicationError{
 		code: c,
-		err:  errors.Errorf(format, args...),
+		err:  fmt.Errorf(format, args...),
+		// err:  errors.Errorf(format, args...),
 	}
 }
 
@@ -29,7 +30,8 @@ func Wrap(c code.ErrorCode, err error) error {
 	}
 	return &applicationError{
 		code: c,
-		err:  errors.WithStack(err),
+		err:  err,
+		// err:  errors.WithStack(err),
 	}
 }
 
