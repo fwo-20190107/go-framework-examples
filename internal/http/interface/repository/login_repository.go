@@ -57,7 +57,7 @@ func (r *loginRepository) GetByUserID(ctx context.Context, userID int) (*entity.
 	}, nil
 }
 
-func (r *loginRepository) Store(ctx context.Context, login entity.Login) error {
+func (r *loginRepository) Store(ctx context.Context, login *entity.Login) error {
 	query := "INSERT INTO login (`login_id`, `user_id`, `password`) VALUES (?, ?, ?)"
 	if _, err := r.Execute(ctx, query, login.LoginID, login.UserID, login.Password); err != nil {
 		return err

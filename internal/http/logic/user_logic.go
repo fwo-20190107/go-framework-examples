@@ -44,7 +44,7 @@ func (l *userLogic) GetAll(ctx context.Context) ([]entity.User, error) {
 }
 
 func (l *userLogic) Signup(ctx context.Context, input *iodata.SignupInput) error {
-	user := entity.User{
+	user := &entity.User{
 		Name:      input.Name,
 		Authority: defaultAutority,
 	}
@@ -53,7 +53,7 @@ func (l *userLogic) Signup(ctx context.Context, input *iodata.SignupInput) error
 		return err
 	}
 
-	login := entity.Login{
+	login := &entity.Login{
 		UserID:   int(userID),
 		Password: input.Password,
 	}
