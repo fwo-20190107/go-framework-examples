@@ -38,4 +38,7 @@ func (v *ngWord) Error(message string) *ngWord {
 
 var ngWords = []string{
 	"hoge",
+	"fuga",
 }
+
+var _ validation.Rule = (*ngWord)(nil)
