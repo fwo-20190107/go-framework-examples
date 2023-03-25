@@ -20,44 +20,44 @@ func NewUserHandler(userLogic logic.UserLogic) *userHandler {
 	}
 }
 
-func (h *userHandler) Signup(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
+func (h *userHandler) Signup(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
 	return nil
 }
 
-func (h *userHandler) getUserByID(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
+func (h *userHandler) getUserByID(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
 	vars, err := httpCtx.Vars("/users", "user_id")
 	if err != nil {
-		return &infra.HttpError{Response: ErrUnexpected, Err: err}
+		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
 	}
 
 	uid, ok := vars["user_id"]
 	if !ok {
 		err = errors.Errorf(code.ErrBadRequest, "failed to get userID from path parameter.")
-		return &infra.HttpError{Response: ErrUnexpected, Err: err}
+		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
 	}
 
 	uid8, err := strconv.Atoi(uid)
 	if err != nil {
-		r := newErrorResponse("入力値エラー", "パラメータが数値じゃない")
-		return &infra.HttpError{Response: r, Err: errors.Wrap(code.ErrBadRequest, err)}
+		r := NewHTTPError("入力値エラー", "パラメータが数値じゃない")
+		return &infra.HandleError{HTTPError: r, Error: errors.Wrap(code.ErrBadRequest, err)}
 	}
 	user, err := h.userLogic.GetByID(ctx, uid8)
 	if err != nil {
 		r := ErrUnexpected
 		switch {
 		case errors.Is(err, code.ErrNotFound):
-			r = newErrorResponse("エラー", "ユーザーデータなし")
+			r = NewHTTPError("エラー", "ユーザーデータなし")
 		}
-		return &infra.HttpError{Response: r, Err: err}
+		return &infra.HandleError{HTTPError: r, Error: err}
 	}
 
 	if err := httpCtx.WriteJSON(http.StatusOK, user); err != nil {
-		return &infra.HttpError{Response: ErrUnexpected, Err: err}
+		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
 	}
 	return nil
 }
 
-func (h *userHandler) HandleRoot(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
+func (h *userHandler) HandleRoot(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
 	switch httpCtx.Method() {
 	case http.MethodGet:
 		return h.getUserByID(ctx, httpCtx)

@@ -68,7 +68,7 @@ func (c *httpContext) WriteJSON(status int, body any) error {
 	return nil
 }
 
-func (c *httpContext) WriteError(status int, res *infra.ErrorResponse) error {
+func (c *httpContext) WriteError(status int, res *infra.HTTPError) error {
 	return c.WriteJSON(status, res)
 }
 

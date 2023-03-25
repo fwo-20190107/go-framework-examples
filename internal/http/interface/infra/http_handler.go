@@ -6,16 +6,16 @@ import (
 	"net/url"
 )
 
-type HttpHandler func(ctx context.Context, httpCtx HttpContext) *HttpError
+type HttpHandler func(ctx context.Context, httpCtx HttpContext) *HandleError
 
-type ErrorResponse struct {
+type HTTPError struct {
 	Title string `json:"title"`
 	Body  any    `json:"body"`
 }
 
-type HttpError struct {
-	Response *ErrorResponse
-	Err      error
+type HandleError struct {
+	HTTPError *HTTPError
+	Error     error
 }
 
 type HttpContext interface {
@@ -25,5 +25,5 @@ type HttpContext interface {
 	Vars(prefix string, keys ...string) (map[string]string, error)
 	Decode(v any) error
 	WriteJSON(code int, body any) error
-	WriteError(code int, res *ErrorResponse) error
+	WriteError(code int, res *HTTPError) error
 }

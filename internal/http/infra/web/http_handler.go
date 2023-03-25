@@ -16,16 +16,16 @@ func (fn HttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	httpCtx := newHttpContext(w, r)
 
 	if err := fn(ctx, httpCtx); err != nil {
-		status := errors.HTTPStatus(err.Err)
-		if err.Err != nil {
+		status := errors.HTTPStatus(err.Error)
+		if err.Error != nil {
 			switch {
 			case status >= 500:
-				registry.Logger.Err(ctx, fmt.Sprint(err.Err))
+				registry.Logger.Err(ctx, fmt.Sprint(err.Error))
 			case status >= 400:
-				registry.Logger.Warn(ctx, fmt.Sprint(err.Err))
+				registry.Logger.Warn(ctx, fmt.Sprint(err.Error))
 			}
 		}
-		httpCtx.WriteError(status, err.Response)
+		httpCtx.WriteError(status, err.HTTPError)
 	}
 }
 

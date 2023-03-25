@@ -20,24 +20,24 @@ func NewAuthMiddleware(sessionRepository repository.SessionRepository) *AuthMidd
 }
 
 func (m *AuthMiddleware) CheckToken(next infra.HttpHandler) infra.HttpHandler {
-	return func(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
+	return func(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
 		token := httpCtx.Header().Get(HEADER_AUTHORIZATION)
 		if len(token) == 0 {
 			err := errors.Errorf(code.ErrUnauthorized, "access token is not set")
-			r := &infra.ErrorResponse{
+			r := &infra.HTTPError{
 				Title: "認証エラー",
 				Body:  "トークンは必須です",
 			}
-			return &infra.HttpError{Response: r, Err: err}
+			return &infra.HandleError{HTTPError: r, Error: err}
 		} else {
 			userID, ok := m.sessionRepository.Get(ctx, token)
 			if !ok {
 				err := errors.Errorf(code.ErrUnauthorized, "illegal token")
-				r := &infra.ErrorResponse{
+				r := &infra.HTTPError{
 					Title: "認証エラー",
 					Body:  "不正なトークンです",
 				}
-				return &infra.HttpError{Response: r, Err: err}
+				return &infra.HandleError{HTTPError: r, Error: err}
 			}
 			ctx = util.SetUserInfo(ctx, token, userID)
 		}

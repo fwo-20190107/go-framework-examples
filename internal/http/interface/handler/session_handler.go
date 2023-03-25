@@ -22,26 +22,26 @@ func NewSessionHandler(userLogic logic.UserLogic, sessionLogic logic.SessionLogi
 	}
 }
 
-func (h *sessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
+func (h *sessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
 	if httpCtx.Method() != http.MethodPost {
-		return &infra.HttpError{Response: ErrPathNotExist}
+		return &infra.HandleError{HTTPError: ErrPathNotExist}
 	}
 
 	var in iodata.SigninInput
 	if err := httpCtx.Decode(&in); err != nil {
-		r := newErrorResponse("クライアントエラー", "リクエストされた値の取得に失敗しました")
-		return &infra.HttpError{Response: r, Err: err}
+		r := NewHTTPError("クライアントエラー", "リクエストされた値の取得に失敗しました")
+		return &infra.HandleError{HTTPError: r, Error: err}
 	}
 
 	if err := in.Validate(); err != nil {
-		return &infra.HttpError{Response: ErrValidParam, Err: err}
+		return &infra.HandleError{HTTPError: ErrValidParam, Error: err}
 	}
 
 	userID, err := h.sessionLogic.Signin(ctx, in.LoginID, in.Password)
 	if err != nil {
 		// サインイン失敗時は、後の攻撃を抑制するため詳細のエラーは返却しない
 		// e.g. ログインIDが存在しない / パスワードが不一致
-		return &infra.HttpError{Response: ErrFailedSignin, Err: err}
+		return &infra.HandleError{HTTPError: ErrFailedSignin, Error: err}
 	}
 
 	user, err := h.userLogic.GetByID(ctx, userID)
@@ -52,15 +52,15 @@ func (h *sessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) 
 			// 正しくユーザー登録が行われていればエラーとならない
 			// このケースは問題があるのでエラーレベルを引き上げる
 			err = errors.Errorf(code.ErrInternal, err.Error())
-			r = newErrorResponse("整合性エラー", "ログインIDに紐付くユーザー情報が見つかりません")
+			r = NewHTTPError("整合性エラー", "ログインIDに紐付くユーザー情報が見つかりません")
 		}
-		return &infra.HttpError{Response: r, Err: err}
+		return &infra.HandleError{HTTPError: r, Error: err}
 	}
 
 	token, err := h.sessionLogic.Start(ctx, user.UserID)
 	if err != nil {
-		r := newErrorResponse("サーバーエラー", "ログイントークンの発行に失敗しました")
-		return &infra.HttpError{Response: r, Err: err}
+		r := NewHTTPError("サーバーエラー", "ログイントークンの発行に失敗しました")
+		return &infra.HandleError{HTTPError: r, Error: err}
 	}
 
 	httpCtx.WriteJSON(http.StatusOK, &iodata.SigninOutput{
@@ -72,9 +72,9 @@ func (h *sessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) 
 	return nil
 }
 
-func (h *sessionHandler) Signout(ctx context.Context, httpCtx infra.HttpContext) *infra.HttpError {
+func (h *sessionHandler) Signout(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
 	if httpCtx.Method() != http.MethodDelete {
-		return &infra.HttpError{Response: ErrPathNotExist}
+		return &infra.HandleError{HTTPError: ErrPathNotExist}
 	}
 
 	h.sessionLogic.Signout(ctx)
