@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"examples/code"
+	"examples/errors"
 	"examples/internal/http/entity"
 	"examples/internal/http/interface/infra"
 	"examples/internal/http/interface/repository/model"
@@ -26,7 +28,7 @@ func (r *loginRepository) GetByID(ctx context.Context, loginID string) (*entity.
 
 	var login model.Login
 	if err := row.Scan(&login.LoginID, &login.UserID, &login.LastSignedAt, &login.Password); err != nil {
-		return nil, err
+		return nil, errors.Wrap(code.ErrNotFound, err)
 	}
 	return &entity.Login{
 		LoginID:      login.LoginID,
@@ -45,7 +47,7 @@ func (r *loginRepository) GetByUserID(ctx context.Context, userID int) (*entity.
 
 	var login model.Login
 	if err := row.Scan(&login.LoginID, &login.UserID, &login.LastSignedAt, &login.Password); err != nil {
-		return nil, err
+		return nil, errors.Wrap(code.ErrNotFound, err)
 	}
 	return &entity.Login{
 		LoginID:      login.LoginID,

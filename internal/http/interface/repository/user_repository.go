@@ -2,6 +2,9 @@ package repository
 
 import (
 	"context"
+	"database/sql"
+	"examples/code"
+	"examples/errors"
 	"examples/internal/http/entity"
 	"examples/internal/http/interface/infra"
 	"examples/internal/http/interface/repository/model"
@@ -25,7 +28,12 @@ func (r *userRepository) GetByID(ctx context.Context, userID int) (*entity.User,
 
 	var user model.User
 	if err := row.Scan(&user.UserID, &user.Name, &user.Authority); err != nil {
-		return nil, err
+		c := code.ErrDatabase
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			c = code.ErrNotFound
+		}
+		return nil, errors.Wrap(c, err)
 	}
 	return &entity.User{
 		UserID:    user.UserID,
@@ -49,7 +57,7 @@ func (r *userRepository) GetAll(ctx context.Context) ([]entity.User, error) {
 			&user.Name,
 			&user.Authority,
 		); err != nil {
-			return nil, err
+			return nil, errors.Wrap(code.ErrDatabase, err)
 		}
 		users = append(users, entity.User{
 			UserID:    user.UserID,
