@@ -69,8 +69,8 @@ func (r *userRepository) GetAll(ctx context.Context) ([]entity.User, error) {
 }
 
 func (r *userRepository) Store(ctx context.Context, user entity.User) (int64, error) {
-	query := "INSERT INTO user (`user_id`, `name`, `authority`) VALUES (?, ?, ?)"
-	result, err := r.Execute(ctx, query, user.UserID, user.Name, user.Authority)
+	query := "INSERT INTO user (`name`, `authority`) VALUES (?, ?, ?)"
+	result, err := r.Execute(ctx, query, user.Name, user.Authority)
 	if err != nil {
 		return 0, err
 	}
