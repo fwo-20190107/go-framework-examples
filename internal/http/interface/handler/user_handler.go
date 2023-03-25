@@ -6,6 +6,7 @@ import (
 	"examples/errors"
 	"examples/internal/http/interface/infra"
 	"examples/internal/http/logic"
+	"examples/internal/http/logic/iodata"
 	"net/http"
 	"strconv"
 )
@@ -21,6 +22,22 @@ func NewUserHandler(userLogic logic.UserLogic) *userHandler {
 }
 
 func (h *userHandler) Signup(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
+	if httpCtx.Method() != http.MethodPost {
+		return &infra.HandleError{HTTPError: ErrPathNotExist}
+	}
+
+	var input *iodata.SignupInput
+	if err := httpCtx.Decode(&input); err != nil {
+		return &infra.HandleError{HTTPError: ErrValidParam, Error: err}
+	}
+
+	if err := input.Validate(); err != nil {
+		return &infra.HandleError{HTTPError: ErrValidParam, Error: err}
+	}
+
+	if err := h.userLogic.Signup(ctx, input); err != nil {
+		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
+	}
 	return nil
 }
 
