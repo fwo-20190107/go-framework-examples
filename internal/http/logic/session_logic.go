@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"examples/code"
 	"examples/errors"
+	"examples/internal/http/logic/iodata"
 	"examples/internal/http/logic/repository"
 	"examples/internal/http/registry"
 	"examples/internal/http/util"
@@ -16,7 +17,7 @@ import (
 )
 
 type SessionLogic interface {
-	Signin(ctx context.Context, loginID, password string) (int, error)
+	Signin(ctx context.Context, input *iodata.SigninInput) (int, error)
 	Signout(ctx context.Context)
 	Start(ctx context.Context, userID int) (string, error)
 }
@@ -35,8 +36,8 @@ func NewSessionLogic(sessionRepository repository.SessionRepository, loginReposi
 	}
 }
 
-func (l *sessionLogic) Signin(ctx context.Context, loginID, password string) (int, error) {
-	login, err := l.loginRepository.GetByID(ctx, loginID)
+func (l *sessionLogic) Signin(ctx context.Context, input *iodata.SigninInput) (int, error) {
+	login, err := l.loginRepository.GetByID(ctx, input.LoginID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return 0, errors.Errorf(code.ErrNotFound, err.Error())
@@ -44,7 +45,7 @@ func (l *sessionLogic) Signin(ctx context.Context, loginID, password string) (in
 		return 0, err
 	}
 
-	if login.Password != password {
+	if login.Password != input.Password {
 		return 0, errors.Errorf(code.ErrBadRequest, "wrong loginID or password")
 	}
 

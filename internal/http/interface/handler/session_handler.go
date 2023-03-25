@@ -27,17 +27,17 @@ func (h *sessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) 
 		return &infra.HandleError{HTTPError: ErrPathNotExist}
 	}
 
-	var in iodata.SigninInput
-	if err := httpCtx.Decode(&in); err != nil {
+	var input *iodata.SigninInput
+	if err := httpCtx.Decode(&input); err != nil {
 		r := NewHTTPError("クライアントエラー", "リクエストされた値の取得に失敗しました")
 		return &infra.HandleError{HTTPError: r, Error: err}
 	}
 
-	if err := in.Validate(); err != nil {
+	if err := input.Validate(); err != nil {
 		return &infra.HandleError{HTTPError: ErrValidParam, Error: err}
 	}
 
-	userID, err := h.sessionLogic.Signin(ctx, in.LoginID, in.Password)
+	userID, err := h.sessionLogic.Signin(ctx, input)
 	if err != nil {
 		// サインイン失敗時は、後の攻撃を抑制するため詳細のエラーは返却しない
 		// e.g. ログインIDが存在しない / パスワードが不一致
