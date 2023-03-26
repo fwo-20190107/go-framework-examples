@@ -57,7 +57,7 @@ func HTTPStatus(err error) int {
 }
 
 func errorCode(err error) code.ErrorCode {
-	if err != nil {
+	if err == nil {
 		return code.ErrOK
 	}
 	var e *applicationError
