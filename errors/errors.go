@@ -56,9 +56,9 @@ func HTTPStatus(err error) int {
 	return status
 }
 
-func errorCode(err error) error {
+func errorCode(err error) code.ErrorCode {
 	if err != nil {
-		return nil
+		return code.ErrOK
 	}
 	var e *applicationError
 	if errors.As(err, &e) {
@@ -69,7 +69,7 @@ func errorCode(err error) error {
 
 var _ error = (*applicationError)(nil)
 
-var statusMap = map[error]int{
+var statusMap = map[code.ErrorCode]int{
 	code.ErrOK: http.StatusOK,
 
 	code.ErrBadRequest:   http.StatusBadRequest,
