@@ -50,7 +50,7 @@ func (c *httpContext) Vars(prefix string, keys ...string) (map[string]string, er
 func (c *httpContext) Decode(v any) error {
 	decoder := json.NewDecoder(c.r.Body)
 	if err := decoder.Decode(&v); err != nil {
-		return err
+		return errors.Wrap(code.ErrBadRequest, err)
 	}
 	return nil
 }
