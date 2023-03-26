@@ -13,8 +13,7 @@ func WithRecover(next http.Handler) http.HandlerFunc {
 		defer func() {
 			if err := recover(); err != nil {
 				registry.Logger.Fatal(ctx, fmt.Sprintf("Msg: %v\n%s\n", err, string(debug.Stack())))
-				w.WriteHeader(http.StatusInternalServerError)
-				w.Write([]byte("fatal error"))
+				http.Error(w, "Sorry. Request was interrupted.", http.StatusInternalServerError)
 			}
 		}()
 		next.ServeHTTP(w, r)
