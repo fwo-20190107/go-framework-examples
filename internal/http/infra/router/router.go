@@ -23,7 +23,7 @@ func SetRoute(sqlh infra.SqlHandler) {
 	sessionRepo := repository.NewSessionRepository(cache.NewLocalStore())
 
 	// logic
-	userLogic := logic.NewUserLogic(userRepo)
+	userLogic := logic.NewUserLogic(userRepo, loginRepo)
 	sessionLogic := logic.NewSessionLogic(sessionRepo, loginRepo)
 
 	// middleware
@@ -39,7 +39,7 @@ func SetRoute(sqlh infra.SqlHandler) {
 	users := handler.NewUserHandler(userLogic)
 	{
 		http.Handle("/signup", defaultHandler(users.Signup))
-		http.Handle("/users/", defaultHandler(authMid.CheckToken(users.HandleRoot)))
+		http.Handle("/user/", defaultHandler(authMid.CheckToken(users.HandleRoot)))
 	}
 
 	session := handler.NewSessionHandler(userLogic, sessionLogic)
