@@ -45,6 +45,9 @@ func (l *sessionLogic) Signin(ctx context.Context, input *iodata.SigninInput) (i
 		return 0, err
 	}
 
+	// テストデータ投入コスト削減のため平文で登録/比較しています
+	// 当然ダメなのでパスワードは最低限ハッシュ化して保存し、
+	// 比較には bcrypt.CompareHashAndPassword() を使用すること
 	if login.Password != input.Password {
 		return 0, errors.Errorf(code.ErrBadRequest, "wrong loginID or password")
 	}
