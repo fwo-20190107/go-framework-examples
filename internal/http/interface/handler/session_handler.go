@@ -22,6 +22,19 @@ func NewSessionHandler(userLogic logic.UserLogic, sessionLogic logic.SessionLogi
 	}
 }
 
+// signin godoc
+//	@Summary		Sign in of the application.
+//	@Description	Password authentication is performed and the issued token is returned.
+//	@Tags			session
+//	@Accept			json
+//	@Produce		json
+//	@Param			input	body		iodata.SigninInput	true	"foo"
+//	@Success		200		{object}	iodata.SigninOutput
+//	@Failure		400		{object}	infra.HTTPError
+//	@Failure		401		{object}	infra.HTTPError
+//	@Failure		404		{object}	infra.HTTPError
+//	@Failure		500		{object}	infra.HTTPError
+//	@Router			/signin [post]
 func (h *sessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
 	if httpCtx.Method() != http.MethodPost {
 		return &infra.HandleError{HTTPError: ErrPathNotExist}
@@ -72,6 +85,16 @@ func (h *sessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) 
 	return nil
 }
 
+// signout godoc
+//	@Summary		Sign out of the application.
+//	@Description	Discard session.
+//	@Tags			session
+//	@Success		200
+//	@Failure		401	{object}	infra.HTTPError
+//	@Failure		404	{object}	infra.HTTPError
+//	@Failure		500	{object}	infra.HTTPError
+//	@Security		Bearer
+//	@Router			/signout [delete]
 func (h *sessionHandler) Signout(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
 	if httpCtx.Method() != http.MethodDelete {
 		return &infra.HandleError{HTTPError: ErrPathNotExist}
