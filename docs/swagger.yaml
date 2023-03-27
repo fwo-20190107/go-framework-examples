@@ -1,4 +1,66 @@
 basePath: /
+definitions:
+  entity.User:
+    properties:
+      authority:
+        type: integer
+      name:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  infra.HTTPError:
+    properties:
+      body: {}
+      title:
+        type: string
+    type: object
+  iodata.ModifyAuthorityInput:
+    properties:
+      authority:
+        type: integer
+    type: object
+  iodata.ModifyNameInput:
+    properties:
+      name:
+        type: string
+    type: object
+  iodata.SigninInput:
+    properties:
+      login_id:
+        type: string
+      password:
+        type: string
+    type: object
+  iodata.SigninOutput:
+    properties:
+      authority:
+        type: integer
+      name:
+        type: string
+      token:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  iodata.SignupInput:
+    properties:
+      login_id:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  iodata.UserModifyOutput:
+    properties:
+      authority:
+        type: integer
+      name:
+        type: string
+      user_id:
+        type: integer
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -6,9 +68,266 @@ info:
   license:
     name: MIT License
     url: https://github.com/ebiy0rom0/go-framework-examples/blob/develop/LICENSE
-  title: Go Web Framework Examples.
+  title: Go Web Framework Examples
   version: 1.0.0
-paths: {}
+paths:
+  /signin:
+    post:
+      consumes:
+      - application/json
+      description: Password authentication is performed and the issued token is returned.
+      parameters:
+      - description: foo
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/iodata.SigninInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/iodata.SigninOutput'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+      summary: Sign in of the application.
+      tags:
+      - session
+  /signout:
+    delete:
+      description: Discard session.
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+      security:
+      - Bearer: []
+      summary: Sign out of the application.
+      tags:
+      - session
+  /signup:
+    post:
+      consumes:
+      - application/json
+      description: Register account information and create user
+      parameters:
+      - description: foo
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/iodata.SignupInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+      summary: Sign up of the application
+      tags:
+      - user
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: get all users
+      parameters:
+      - description: foo
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+      security:
+      - Bearer: []
+      summary: Get all users
+      tags:
+      - user
+    patch:
+      consumes:
+      - application/json
+      description: Accepts name changes from the person himself
+      parameters:
+      - description: foo
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/iodata.ModifyNameInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/iodata.UserModifyOutput'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+      security:
+      - Bearer: []
+      summary: Modify user name
+      tags:
+      - user
+  /user/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: get user
+      parameters:
+      - description: foo
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+      security:
+      - Bearer: []
+      summary: Get user by userID
+      tags:
+      - user
+    patch:
+      consumes:
+      - application/json
+      description: Accepts authority changes from only admin user
+      parameters:
+      - description: modify target userID
+        in: path
+        name: user_id
+        type: integer
+      - description: foo
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/iodata.ModifyAuthorityInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/iodata.UserModifyOutput'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/infra.HTTPError'
+      security:
+      - Bearer: []
+      summary: Modify user authority
+      tags:
+      - user
 securityDefinitions:
   Bearer:
     description: Paste the token contained in the /signin response.
