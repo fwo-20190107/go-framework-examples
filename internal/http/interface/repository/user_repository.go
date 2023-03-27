@@ -81,9 +81,17 @@ func (r *userRepository) Store(ctx context.Context, user *entity.User) (int64, e
 	return userID, nil
 }
 
-func (r *userRepository) ModifyAuthority(ctx context.Context, userID, authority int) error {
+func (r *userRepository) ModifyAuthority(ctx context.Context, userID int, authority int8) error {
 	query := "UPDATE user SET authority = ? WHERE user_id = ?"
 	if _, err := r.Execute(ctx, query, authority, userID); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *userRepository) ModifyName(ctx context.Context, userID int, name string) error {
+	query := "UPDATE user SET name = ? WHERE user_id = ?"
+	if _, err := r.Execute(ctx, query, name, userID); err != nil {
 		return err
 	}
 	return nil
