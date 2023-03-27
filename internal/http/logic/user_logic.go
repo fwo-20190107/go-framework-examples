@@ -67,12 +67,12 @@ func (l *userLogic) Signup(ctx context.Context, input *iodata.SignupInput) error
 	return nil
 }
 
-func (l *userLogic) ModifyAuthority(ctx context.Context, userID int, autority int8) error {
-	return nil
+func (l *userLogic) ModifyAuthority(ctx context.Context, userID int, authority int8) error {
+	return l.userRepository.ModifyAuthority(ctx, userID, authority)
 }
 
 func (l *userLogic) ModifyName(ctx context.Context, userID int, name string) error {
-	return nil
+	return l.userRepository.ModifyName(ctx, userID, name)
 }
 
 func (l *userLogic) Authorization(ctx context.Context, required int8) (bool, error) {
