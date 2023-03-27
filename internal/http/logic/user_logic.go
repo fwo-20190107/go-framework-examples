@@ -5,6 +5,7 @@ import (
 	"examples/internal/http/entity"
 	"examples/internal/http/logic/iodata"
 	"examples/internal/http/logic/repository"
+	"examples/internal/http/util"
 )
 
 const defaultAutority = 99
@@ -13,6 +14,9 @@ type UserLogic interface {
 	GetByID(ctx context.Context, userID int) (*entity.User, error)
 	GetAll(ctx context.Context) ([]entity.User, error)
 	Signup(ctx context.Context, input *iodata.SignupInput) error
+	ModifyAuthority(ctx context.Context, userID int, authority int8) error
+	ModifyName(ctx context.Context, userID int, name string) error
+	Authorization(ctx context.Context, required int8) (bool, error)
 }
 
 type userLogic struct {
@@ -61,6 +65,26 @@ func (l *userLogic) Signup(ctx context.Context, input *iodata.SignupInput) error
 		return err
 	}
 	return nil
+}
+
+func (l *userLogic) ModifyAuthority(ctx context.Context, userID int, autority int8) error {
+	return nil
+}
+
+func (l *userLogic) ModifyName(ctx context.Context, userID int, name string) error {
+	return nil
+}
+
+func (l *userLogic) Authorization(ctx context.Context, required int8) (bool, error) {
+	userID, err := util.GetUserID(ctx)
+	if err != nil {
+		return true, err
+	}
+	user, err := l.userRepository.GetByID(ctx, userID)
+	if err != nil {
+		return true, err
+	}
+	return user.Authority >= required, nil
 }
 
 var _ UserLogic = (*userLogic)(nil)
