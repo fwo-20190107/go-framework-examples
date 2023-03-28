@@ -14,8 +14,9 @@ type SignupInput struct {
 
 func (i SignupInput) Validate() error {
 	return validation.ValidateStruct(&i,
-		validation.Field(&i.LoginID, validation.Required, validation.Length(4, 16), customValidaton.NgWord),
+		validation.Field(&i.LoginID, validation.Required, validation.Length(4, 16)),
 		validation.Field(&i.Password, validation.Required, validation.Length(8, 32)),
+		validation.Field(&i.Name, validation.Required, customValidaton.NgWord),
 	)
 }
 
