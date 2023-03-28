@@ -58,6 +58,7 @@ func (l *userLogic) Signup(ctx context.Context, input *iodata.SignupInput) error
 	}
 
 	login := &entity.Login{
+		LoginID:  input.LoginID,
 		UserID:   int(userID),
 		Password: input.Password,
 	}
