@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  mysql:
+    build:
+      context: .
+      dockerfile: ./mysql/Dockerfile
+    container_name: db-mysql
+    volumes:
+      - ./mysql/conf.d:/etc/mysql/conf.d
+      - ./mysql/initdb.d:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpass
+    hostname: mysqldb010
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD
+

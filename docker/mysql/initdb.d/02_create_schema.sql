@@ -1,0 +1,2 @@
+DROP SCHEMA IF EXISTS `app`;
+CREATE SCHEMA `app`;
