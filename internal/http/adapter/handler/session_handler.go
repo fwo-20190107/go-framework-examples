@@ -4,7 +4,7 @@ import (
 	"context"
 	"examples/code"
 	"examples/errors"
-	"examples/internal/http/interface/infra"
+	"examples/internal/http/adapter/infra"
 	"examples/internal/http/logic"
 	"examples/internal/http/logic/iodata"
 	"net/http"

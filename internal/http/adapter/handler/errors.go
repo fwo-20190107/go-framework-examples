@@ -1,6 +1,6 @@
 package handler
 
-import "examples/internal/http/interface/infra"
+import "examples/internal/http/adapter/infra"
 
 var (
 	ErrUnexpected   = NewHTTPError("エラー", "不明なエラー")
