@@ -66,8 +66,8 @@ func (r *loginRepository) Store(ctx context.Context, login *entity.Login) error 
 }
 
 func (r *loginRepository) ModifyLastSigned(ctx context.Context, loginID string) error {
-	query := "UPDATE login SET last_signed_at = strftime('%s', ?) WHERE login_id = ?"
-	if _, err := r.Execute(ctx, query, time.Now(), loginID); err != nil {
+	query := "UPDATE login SET last_signed_at = ? WHERE login_id = ?"
+	if _, err := r.Execute(ctx, query, time.Now().Format(time.DateTime), loginID); err != nil {
 		return err
 	}
 	return nil

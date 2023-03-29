@@ -38,12 +38,8 @@ func run() error {
 	if err := engine.CreateDbFile(schema); err != nil {
 		return err
 	}
-	con, err := engine.NewSqlite3(schema)
+	con, err := engine.NewMysql()
 	if err != nil {
-		return err
-	}
-
-	if err := sql.InitializeDb(con); err != nil {
 		return err
 	}
 
