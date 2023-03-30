@@ -6,6 +6,7 @@ require (
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/mattn/go-sqlite3 v1.14.16
+	github.com/pelletier/go-toml/v2 v2.0.7
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.29.0
 	github.com/sony/sonyflake v1.1.0
@@ -27,9 +28,7 @@ require (
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
-	github.com/pelletier/go-toml/v2 v2.0.7 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
-	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/swaggo/files v1.0.1 // indirect
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
