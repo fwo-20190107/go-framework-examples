@@ -2,8 +2,8 @@ package util
 
 import (
 	"context"
-	"examples/code"
-	"examples/errors"
+	"examples/pkg/code"
+	"examples/pkg/errors"
 )
 
 type userInfo struct {
