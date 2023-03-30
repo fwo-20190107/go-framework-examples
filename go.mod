@@ -5,6 +5,7 @@ go 1.20
 require (
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/google/wire v0.5.0
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/pelletier/go-toml/v2 v2.0.7
 	github.com/pkg/errors v0.9.1
