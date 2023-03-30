@@ -1,14 +1,14 @@
 package main
 
 import (
-	"examples/config"
-	"examples/pkg/http/infra/router"
-	"examples/pkg/http/infra/sql"
-	"examples/pkg/http/infra/sql/engine"
+	"examples/pkg/config"
+	"examples/pkg/infra/router"
+	"examples/pkg/infra/sql"
+	"examples/pkg/infra/sql/engine"
 
 	// registry の init() で使用する変数を初期化している
 	// ↓ を宣言して初期化を済ませておく必要があります
-	_ "examples/pkg/http/registry"
+	_ "examples/pkg/logger"
 	"fmt"
 	"net/http"
 )
