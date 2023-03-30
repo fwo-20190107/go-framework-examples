@@ -36,10 +36,7 @@ func main() {
 
 func run() error {
 	config.LoadConfig()
-	schema := "../../db/example.db"
-	if err := engine.CreateDbFile(schema); err != nil {
-		return err
-	}
+
 	con, err := engine.NewMysql()
 	if err != nil {
 		return err
