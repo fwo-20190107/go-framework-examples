@@ -1,0 +1,7 @@
+
+[DB]
+  user="user"
+  passwd="userpass"
+  net="tcp"
+  addr="localhost:3306"
+  dbname="app"

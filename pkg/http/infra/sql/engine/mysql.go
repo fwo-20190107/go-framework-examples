@@ -3,6 +3,7 @@ package engine
 import (
 	"database/sql"
 	"examples/code"
+	"examples/config"
 	"examples/errors"
 
 	"github.com/go-sql-driver/mysql"
@@ -10,11 +11,11 @@ import (
 
 func NewMysql() (*sql.DB, error) {
 	cnf := &mysql.Config{
-		User:                 "user",
-		Passwd:               "userpass",
-		Net:                  "tcp",
-		Addr:                 "mysqldb010:3306",
-		DBName:               "app",
+		User:                 config.C.DB.User,
+		Passwd:               config.C.DB.Passwd,
+		Net:                  config.C.DB.Net,
+		Addr:                 config.C.DB.Addr,
+		DBName:               config.C.DB.DBName,
 		AllowNativePasswords: true,
 	}
 	//

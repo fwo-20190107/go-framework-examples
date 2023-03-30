@@ -1,6 +1,7 @@
 package main
 
 import (
+	"examples/config"
 	"examples/pkg/http/infra/router"
 	"examples/pkg/http/infra/sql"
 	"examples/pkg/http/infra/sql/engine"
@@ -34,6 +35,7 @@ func main() {
 }
 
 func run() error {
+	config.LoadConfig()
 	schema := "../../db/example.db"
 	if err := engine.CreateDbFile(schema); err != nil {
 		return err
