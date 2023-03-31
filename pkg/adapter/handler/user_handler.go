@@ -68,7 +68,7 @@ func (h *userHandler) Signup(ctx context.Context, httpCtx infra.HttpContext) *in
 //	@tags			user
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	entity.User
+//	@Success		200	{object}	[]iodata.UserOutput
 //	@Failure		400	{object}	infra.HTTPError
 //	@Failure		401	{object}	infra.HTTPError
 //	@Failure		404	{object}	infra.HTTPError
@@ -86,7 +86,16 @@ func (h *userHandler) getAll(ctx context.Context, httpCtx infra.HttpContext) *in
 		return &infra.HandleError{HTTPError: r, Error: err}
 	}
 
-	if err := httpCtx.WriteJSON(http.StatusOK, users); err != nil {
+	// ここの変換処理は Presenter が本来担当する
+	var output []iodata.UserOutput
+	for _, user := range users {
+		output = append(output, iodata.UserOutput{
+			UserID:    user.UserID,
+			Name:      user.Name,
+			Authority: user.Authority,
+		})
+	}
+	if err := httpCtx.WriteJSON(http.StatusOK, output); err != nil {
 		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
 	}
 	return nil
@@ -99,7 +108,7 @@ func (h *userHandler) getAll(ctx context.Context, httpCtx infra.HttpContext) *in
 //	@Accept			json
 //	@Produce		json
 //	@Param			user_id	path		int	true	"foo"
-//	@Success		200		{object}	entity.User
+//	@Success		200		{object}	iodata.UserOutput
 //	@Failure		400		{object}	infra.HTTPError
 //	@Failure		401		{object}	infra.HTTPError
 //	@Failure		404		{object}	infra.HTTPError
@@ -117,7 +126,11 @@ func (h *userHandler) getByID(ctx context.Context, httpCtx infra.HttpContext, us
 		return &infra.HandleError{HTTPError: r, Error: err}
 	}
 
-	if err := httpCtx.WriteJSON(http.StatusOK, user); err != nil {
+	if err := httpCtx.WriteJSON(http.StatusOK, iodata.UserOutput{
+		UserID:    user.UserID,
+		Name:      user.Name,
+		Authority: user.Authority,
+	}); err != nil {
 		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
 	}
 	return nil
@@ -131,7 +144,7 @@ func (h *userHandler) getByID(ctx context.Context, httpCtx infra.HttpContext, us
 //	@Produce		json
 //	@Param			user_id	path		int							false	"modify target userID"
 //	@Param			input	body		iodata.ModifyAuthorityInput	true	"foo"
-//	@Success		200		{object}	iodata.UserModifyOutput
+//	@Success		200		{object}	iodata.UserOutput
 //	@Failure		400		{object}	infra.HTTPError
 //	@Failure		401		{object}	infra.HTTPError
 //	@Failure		404		{object}	infra.HTTPError
@@ -168,7 +181,11 @@ func (h *userHandler) modifyAuthority(ctx context.Context, httpCtx infra.HttpCon
 		logger.L.Warn(ctx, fmt.Sprint(err))
 	}
 
-	if err := httpCtx.WriteJSON(http.StatusOK, user); err != nil {
+	if err := httpCtx.WriteJSON(http.StatusOK, iodata.UserOutput{
+		UserID:    user.UserID,
+		Name:      user.Name,
+		Authority: user.Authority,
+	}); err != nil {
 		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
 	}
 	return nil
@@ -181,7 +198,7 @@ func (h *userHandler) modifyAuthority(ctx context.Context, httpCtx infra.HttpCon
 //	@Accept			json
 //	@Produce		json
 //	@Param			input	body		iodata.ModifyNameInput	true	"foo"
-//	@Success		200		{object}	iodata.UserModifyOutput
+//	@Success		200		{object}	iodata.UserOutput
 //	@Failure		400		{object}	infra.HTTPError
 //	@Failure		401		{object}	infra.HTTPError
 //	@Failure		404		{object}	infra.HTTPError
@@ -214,7 +231,11 @@ func (h *userHandler) modifyName(ctx context.Context, httpCtx infra.HttpContext)
 		logger.L.Warn(ctx, fmt.Sprint(err))
 	}
 
-	if err := httpCtx.WriteJSON(http.StatusOK, user); err != nil {
+	if err := httpCtx.WriteJSON(http.StatusOK, iodata.UserOutput{
+		UserID:    user.UserID,
+		Name:      user.Name,
+		Authority: user.Authority,
+	}); err != nil {
 		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
 	}
 	return nil

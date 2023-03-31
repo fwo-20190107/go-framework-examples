@@ -82,10 +82,12 @@ func (h *sessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) 
 	}
 
 	httpCtx.WriteJSON(http.StatusOK, &iodata.SigninOutput{
-		Token:     token,
-		UserID:    user.UserID,
-		Name:      user.Name,
-		Authority: user.Authority,
+		Token: token,
+		UserOutput: iodata.UserOutput{
+			UserID:    user.UserID,
+			Name:      user.Name,
+			Authority: user.Authority,
+		},
 	})
 	return nil
 }
