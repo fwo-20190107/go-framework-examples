@@ -10,13 +10,18 @@ import (
 	"net/http"
 )
 
-type SessionHandler struct {
+type SessionHandler interface {
+	Signin(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError
+	Signout(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError
+}
+
+type sessionHandler struct {
 	userLogic    logic.UserLogic
 	sessionLogic logic.SessionLogic
 }
 
-func NewSessionHandler(userLogic logic.UserLogic, sessionLogic logic.SessionLogic) *SessionHandler {
-	return &SessionHandler{
+func NewSessionHandler(userLogic logic.UserLogic, sessionLogic logic.SessionLogic) SessionHandler {
+	return &sessionHandler{
 		userLogic:    userLogic,
 		sessionLogic: sessionLogic,
 	}
@@ -35,7 +40,7 @@ func NewSessionHandler(userLogic logic.UserLogic, sessionLogic logic.SessionLogi
 //	@Failure		404		{object}	infra.HTTPError
 //	@Failure		500		{object}	infra.HTTPError
 //	@Router			/signin [post]
-func (h *SessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
+func (h *sessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
 	if httpCtx.Method() != http.MethodPost {
 		return &infra.HandleError{HTTPError: ErrPathNotExist}
 	}
@@ -95,7 +100,7 @@ func (h *SessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) 
 //	@Failure		500	{object}	infra.HTTPError
 //	@Security		Bearer
 //	@Router			/signout [delete]
-func (h *SessionHandler) Signout(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
+func (h *sessionHandler) Signout(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
 	if httpCtx.Method() != http.MethodDelete {
 		return &infra.HandleError{HTTPError: ErrPathNotExist}
 	}

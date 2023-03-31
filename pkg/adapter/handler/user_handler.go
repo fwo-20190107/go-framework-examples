@@ -14,12 +14,17 @@ import (
 	"strconv"
 )
 
-type UserHandler struct {
+type UserHandler interface {
+	Signup(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError
+	HandleRoot(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError
+}
+
+type userHandler struct {
 	userLogic logic.UserLogic
 }
 
-func NewUserHandler(userLogic logic.UserLogic) *UserHandler {
-	return &UserHandler{
+func NewUserHandler(userLogic logic.UserLogic) UserHandler {
+	return &userHandler{
 		userLogic: userLogic,
 	}
 }
@@ -37,7 +42,7 @@ func NewUserHandler(userLogic logic.UserLogic) *UserHandler {
 //	@Failure		404	{object}	infra.HTTPError
 //	@Failure		500	{object}	infra.HTTPError
 //	@Router			/signup [post]
-func (h *UserHandler) Signup(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
+func (h *userHandler) Signup(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
 	if httpCtx.Method() != http.MethodPost {
 		return &infra.HandleError{HTTPError: ErrPathNotExist}
 	}
@@ -63,15 +68,14 @@ func (h *UserHandler) Signup(ctx context.Context, httpCtx infra.HttpContext) *in
 //	@tags			user
 //	@Accept			json
 //	@Produce		json
-//	@Param			user_id	path		int	true	"foo"
-//	@Success		200		{object}	entity.User
-//	@Failure		400		{object}	infra.HTTPError
-//	@Failure		401		{object}	infra.HTTPError
-//	@Failure		404		{object}	infra.HTTPError
-//	@Failure		500		{object}	infra.HTTPError
+//	@Success		200	{object}	entity.User
+//	@Failure		400	{object}	infra.HTTPError
+//	@Failure		401	{object}	infra.HTTPError
+//	@Failure		404	{object}	infra.HTTPError
+//	@Failure		500	{object}	infra.HTTPError
 //	@Security		Bearer
 //	@Router			/user [get]
-func (h *UserHandler) getAll(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
+func (h *userHandler) getAll(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
 	users, err := h.userLogic.GetAll(ctx)
 	if err != nil {
 		r := ErrUnexpected
@@ -102,7 +106,7 @@ func (h *UserHandler) getAll(ctx context.Context, httpCtx infra.HttpContext) *in
 //	@Failure		500		{object}	infra.HTTPError
 //	@Security		Bearer
 //	@Router			/user/{user_id} [get]
-func (h *UserHandler) getByID(ctx context.Context, httpCtx infra.HttpContext, userID int) *infra.HandleError {
+func (h *userHandler) getByID(ctx context.Context, httpCtx infra.HttpContext, userID int) *infra.HandleError {
 	user, err := h.userLogic.GetByID(ctx, userID)
 	if err != nil {
 		r := ErrUnexpected
@@ -134,7 +138,7 @@ func (h *UserHandler) getByID(ctx context.Context, httpCtx infra.HttpContext, us
 //	@Failure		500		{object}	infra.HTTPError
 //	@Security		Bearer
 //	@Router			/user/{user_id} [patch]
-func (h *UserHandler) modifyAuthority(ctx context.Context, httpCtx infra.HttpContext, userID int) *infra.HandleError {
+func (h *userHandler) modifyAuthority(ctx context.Context, httpCtx infra.HttpContext, userID int) *infra.HandleError {
 	// リクエスト者の権限を確認
 	const requiredAuthority = 99
 	if ok, err := h.userLogic.Authorization(ctx, requiredAuthority); err != nil {
@@ -184,7 +188,7 @@ func (h *UserHandler) modifyAuthority(ctx context.Context, httpCtx infra.HttpCon
 //	@Failure		500		{object}	infra.HTTPError
 //	@Security		Bearer
 //	@Router			/user [patch]
-func (h *UserHandler) modifyName(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
+func (h *userHandler) modifyName(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
 	userID, err := util.GetUserID(ctx)
 	if err != nil {
 		return &infra.HandleError{}
@@ -216,7 +220,7 @@ func (h *UserHandler) modifyName(ctx context.Context, httpCtx infra.HttpContext)
 	return nil
 }
 
-func (h *UserHandler) HandleRoot(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
+func (h *userHandler) HandleRoot(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
 	vars, err := httpCtx.Vars("/user", "user_id")
 	if err != nil {
 		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
@@ -226,7 +230,7 @@ func (h *UserHandler) HandleRoot(ctx context.Context, httpCtx infra.HttpContext)
 	uidp, ok := vars["user_id"]
 	if ok {
 		if userID, err = strconv.Atoi(uidp); err != nil {
-			return &infra.HandleError{}
+			return &infra.HandleError{HTTPError: ErrValidParam, Error: errors.Errorf(code.ErrBadRequest, "path is not number")}
 		}
 	}
 
