@@ -42,6 +42,9 @@ func (c *httpContext) Vars(prefix string, keys ...string) (map[string]string, er
 
 	vars := make(map[string]string, len(param))
 	for i, p := range param {
+		if len(p) == 0 {
+			continue
+		}
 		vars[keys[i]] = p
 	}
 	return vars, nil
