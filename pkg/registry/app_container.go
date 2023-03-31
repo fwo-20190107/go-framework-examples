@@ -12,22 +12,10 @@ import (
 	"github.com/google/wire"
 )
 
-type AppContainer struct {
-	User    handler.UserHandler
-	Session handler.SessionHandler
-}
-
-func NewAppContainer(userHandler handler.UserHandler, sessionHandler handler.SessionHandler) *AppContainer {
-	return &AppContainer{
-		User:    userHandler,
-		Session: sessionHandler,
-	}
-}
-
 // wire用
-func InitializeAppController(sqlh infra.SqlHandler, store infra.LocalStore) *AppContainer {
+func InitializeAppController(sqlh infra.SqlHandler, store infra.LocalStore) *handler.AppContainer {
 	wire.Build(
-		NewAppContainer,
+		handler.NewAppContainer,
 		handler.NewUserHandler,
 		handler.NewSessionHandler,
 		logic.NewUserLogic,
@@ -36,5 +24,5 @@ func InitializeAppController(sqlh infra.SqlHandler, store infra.LocalStore) *App
 		repository.NewUserRepository,
 		repository.NewSessionRepository,
 	)
-	return &AppContainer{}
+	return &handler.AppContainer{}
 }

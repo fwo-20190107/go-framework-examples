@@ -16,7 +16,7 @@ import (
 // Injectors from app_container.go:
 
 // wire用
-func InitializeAppController(sqlh infra.SqlHandler, store infra.LocalStore) *AppContainer {
+func InitializeAppController(sqlh infra.SqlHandler, store infra.LocalStore) *handler.AppContainer {
 	userRepository := repository.NewUserRepository(sqlh)
 	loginRepository := repository.NewLoginRepository(sqlh)
 	userLogic := logic.NewUserLogic(userRepository, loginRepository)
@@ -24,20 +24,6 @@ func InitializeAppController(sqlh infra.SqlHandler, store infra.LocalStore) *App
 	sessionRepository := repository.NewSessionRepository(store)
 	sessionLogic := logic.NewSessionLogic(sessionRepository, loginRepository)
 	sessionHandler := handler.NewSessionHandler(userLogic, sessionLogic)
-	appContainer := NewAppContainer(userHandler, sessionHandler)
+	appContainer := handler.NewAppContainer(userHandler, sessionHandler)
 	return appContainer
-}
-
-// app_container.go:
-
-type AppContainer struct {
-	User    handler.UserHandler
-	Session handler.SessionHandler
-}
-
-func NewAppContainer(userHandler handler.UserHandler, sessionHandler handler.SessionHandler) *AppContainer {
-	return &AppContainer{
-		User:    userHandler,
-		Session: sessionHandler,
-	}
 }
