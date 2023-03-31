@@ -2,9 +2,13 @@ package main
 
 import (
 	"examples/pkg/config"
+	"examples/pkg/infra/cache"
+	"examples/pkg/infra/middleware"
 	"examples/pkg/infra/router"
 	"examples/pkg/infra/sql"
 	"examples/pkg/infra/sql/engine"
+	"examples/pkg/registry"
+	"os"
 
 	// registry の init() で使用する変数を初期化している
 	// ↓ を宣言して初期化を済ませておく必要があります
@@ -42,8 +46,18 @@ func run() error {
 		return err
 	}
 
+	// infrastracture datasource accesssor
 	sqlh := sql.NewSqlHandler(con, con)
-	router.SetRoute(sqlh)
+	store := cache.NewLocalStore()
+
+	// setup middleware
+	middleware.InitAuthMiddleware(store)
+	middleware.InitLoggerMiddleware(os.Stdout)
+
+	// application DI container
+	container := registry.InitializeAppController(sqlh, store)
+
+	router.SetRoute(container)
 
 	return http.ListenAndServe(":8080", nil)
 }
