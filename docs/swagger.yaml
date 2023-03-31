@@ -1,14 +1,5 @@
 basePath: /
 definitions:
-  entity.User:
-    properties:
-      authority:
-        type: integer
-      name:
-        type: string
-      user_id:
-        type: integer
-    type: object
   infra.HTTPError:
     properties:
       body: {}
@@ -52,7 +43,7 @@ definitions:
       password:
         type: string
     type: object
-  iodata.UserModifyOutput:
+  iodata.UserOutput:
     properties:
       authority:
         type: integer
@@ -68,7 +59,7 @@ info:
   license:
     name: MIT License
     url: https://github.com/ebiy0rom0/go-framework-examples/blob/develop/LICENSE
-  title: Go Web Framework Examples
+  title: Go Web Framework Examples.
   version: 1.0.0
 paths:
   /signin:
@@ -173,19 +164,15 @@ paths:
       consumes:
       - application/json
       description: get all users
-      parameters:
-      - description: foo
-        in: path
-        name: user_id
-        required: true
-        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entity.User'
+            items:
+              $ref: '#/definitions/iodata.UserOutput'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -224,7 +211,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/iodata.UserModifyOutput'
+            $ref: '#/definitions/iodata.UserOutput'
         "400":
           description: Bad Request
           schema:
@@ -263,7 +250,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entity.User'
+            $ref: '#/definitions/iodata.UserOutput'
         "400":
           description: Bad Request
           schema:
@@ -306,7 +293,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/iodata.UserModifyOutput'
+            $ref: '#/definitions/iodata.UserOutput'
         "400":
           description: Bad Request
           schema:

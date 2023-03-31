@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "description": "Framework examples for Go language.",
-        "title": "Go Web Framework Examples",
+        "title": "Go Web Framework Examples.",
         "contact": {},
         "license": {
             "name": "MIT License",
@@ -181,20 +181,14 @@
                     "user"
                 ],
                 "summary": "Get all users",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "foo",
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entity.User"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/iodata.UserOutput"
+                            }
                         }
                     },
                     "400": {
@@ -255,7 +249,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/iodata.UserModifyOutput"
+                            "$ref": "#/definitions/iodata.UserOutput"
                         }
                     },
                     "400": {
@@ -316,7 +310,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entity.User"
+                            "$ref": "#/definitions/iodata.UserOutput"
                         }
                     },
                     "400": {
@@ -383,7 +377,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/iodata.UserModifyOutput"
+                            "$ref": "#/definitions/iodata.UserOutput"
                         }
                     },
                     "400": {
@@ -415,20 +409,6 @@
         }
     },
     "definitions": {
-        "entity.User": {
-            "type": "object",
-            "properties": {
-                "authority": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "infra.HTTPError": {
             "type": "object",
             "properties": {
@@ -496,7 +476,7 @@
                 }
             }
         },
-        "iodata.UserModifyOutput": {
+        "iodata.UserOutput": {
             "type": "object",
             "properties": {
                 "authority": {
