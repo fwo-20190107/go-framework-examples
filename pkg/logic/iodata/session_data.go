@@ -8,10 +8,8 @@ type SigninInput struct {
 }
 
 type SigninOutput struct {
-	Token     string `json:"token"`
-	UserID    int    `json:"user_id"`
-	Name      string `json:"name"`
-	Authority int8   `json:"authority"`
+	Token string `json:"token"`
+	UserOutput
 }
 
 func (i SigninInput) Validate() error {

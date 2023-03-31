@@ -6,6 +6,12 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
+type UserOutput struct {
+	UserID    int    `json:"user_id"`
+	Name      string `json:"name"`
+	Authority int8   `json:"authority"`
+}
+
 type SignupInput struct {
 	LoginID  string `json:"login_id"`
 	Password string `json:"password"`
@@ -24,20 +30,14 @@ type ModifyNameInput struct {
 	Name string `json:"name"`
 }
 
-type ModifyAuthorityInput struct {
-	Authority int8 `json:"authority"`
-}
-
-type UserModifyOutput struct {
-	UserID    int    `json:"user_id"`
-	Name      string `json:"name"`
-	Authority int8   `json:"authority"`
-}
-
 func (i ModifyNameInput) Validate() error {
 	return validation.ValidateStruct(&i,
 		validation.Field(&i.Name, validation.Required, validation.Length(4, 16), customValidaton.NgWord),
 	)
+}
+
+type ModifyAuthorityInput struct {
+	Authority int8 `json:"authority"`
 }
 
 func (i ModifyAuthorityInput) Validate() error {
