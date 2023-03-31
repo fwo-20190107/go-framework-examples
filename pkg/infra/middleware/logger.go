@@ -11,12 +11,14 @@ import (
 	"github.com/rs/zerolog"
 )
 
+var LoggerMw *loggerMiddleware
+
 type loggerMiddleware struct {
 	logger zerolog.Logger
 }
 
-func NewLoggerMiddleware(w io.Writer) *loggerMiddleware {
-	return &loggerMiddleware{logger: zerolog.New(w)}
+func InitLoggerMiddleware(w io.Writer) {
+	LoggerMw = &loggerMiddleware{logger: zerolog.New(w)}
 }
 
 func (m *loggerMiddleware) WithLogger(next http.Handler) http.HandlerFunc {

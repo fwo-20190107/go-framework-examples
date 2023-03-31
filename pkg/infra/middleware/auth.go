@@ -2,10 +2,12 @@ package middleware
 
 import (
 	"context"
+	"examples/pkg/adapter/infra"
+	"examples/pkg/adapter/repository"
 	"examples/pkg/code"
 	"examples/pkg/errors"
 	"examples/pkg/logger"
-	"examples/pkg/logic/repository"
+	IRepository "examples/pkg/logic/repository"
 	"examples/pkg/util"
 	"fmt"
 	"net/http"
@@ -15,12 +17,14 @@ import (
 
 const tokenPrefix = "Bearer "
 
+var AuthMw *AuthMiddleware
+
 type AuthMiddleware struct {
-	sessionRepository repository.SessionRepository
+	sessionRepository IRepository.SessionRepository
 }
 
-func NewAuthMiddleware(sessionRepository repository.SessionRepository) *AuthMiddleware {
-	return &AuthMiddleware{sessionRepository: sessionRepository}
+func InitAuthMiddleware(store infra.LocalStore) {
+	AuthMw = &AuthMiddleware{sessionRepository: repository.NewSessionRepository(store)}
 }
 
 func (m *AuthMiddleware) WithCheckToken(next http.Handler) http.HandlerFunc {
