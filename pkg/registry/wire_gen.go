@@ -13,19 +13,31 @@ import (
 	"examples/pkg/logic"
 )
 
-// Injectors from wire.go:
+// Injectors from app_container.go:
 
-func InitializeContainer(sqlh infra.SqlHandler) *handler.UserHandler {
+// wire用
+func InitializeAppController(sqlh infra.SqlHandler, store infra.LocalStore) *AppContainer {
 	userRepository := repository.NewUserRepository(sqlh)
 	loginRepository := repository.NewLoginRepository(sqlh)
 	userLogic := logic.NewUserLogic(userRepository, loginRepository)
 	userHandler := handler.NewUserHandler(userLogic)
-	return userHandler
+	sessionRepository := repository.NewSessionRepository(store)
+	sessionLogic := logic.NewSessionLogic(sessionRepository, loginRepository)
+	sessionHandler := handler.NewSessionHandler(userLogic, sessionLogic)
+	appContainer := NewAppContainer(userHandler, sessionHandler)
+	return appContainer
 }
 
-// wire.go:
+// app_container.go:
 
-type AppController struct {
+type AppContainer struct {
 	User    handler.UserHandler
 	Session handler.SessionHandler
+}
+
+func NewAppContainer(userHandler handler.UserHandler, sessionHandler handler.SessionHandler) *AppContainer {
+	return &AppContainer{
+		User:    userHandler,
+		Session: sessionHandler,
+	}
 }
