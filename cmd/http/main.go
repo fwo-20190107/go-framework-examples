@@ -55,7 +55,7 @@ func run() error {
 	middleware.InitLoggerMiddleware(os.Stdout)
 
 	// application DI container
-	container := registry.InitializeAppController(sqlh, store)
+	container := registry.InitializeAppContainer(sqlh, store)
 
 	router.SetRoute(container)
 

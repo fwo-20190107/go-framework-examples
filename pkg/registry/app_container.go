@@ -13,7 +13,7 @@ import (
 )
 
 // wire用
-func InitializeAppController(sqlh infra.SqlHandler, store infra.LocalStore) *handler.AppContainer {
+func InitializeAppContainer(sqlh infra.SqlHandler, store infra.LocalStore) *handler.AppContainer {
 	wire.Build(
 		handler.NewAppContainer,
 		handler.NewUserHandler,
