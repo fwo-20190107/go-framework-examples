@@ -12,7 +12,7 @@ import (
 var C config
 
 func LoadConfig() {
-	path := filepath.Join(util.RootDir(), "config", "config.toml")
+	path := filepath.Join(util.RootDir(), "config.toml")
 	file, err := os.Open(path)
 	if err != nil {
 		panic("failed load config")
