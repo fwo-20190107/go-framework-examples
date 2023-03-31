@@ -21,3 +21,17 @@ PHONY: develop
 develop:
 	docker compose -f ./docker/compose.yaml run --service-ports --name dev-mysql -d mysql
 	air
+
+PHONY: swag_fmt
+swag_fmt:
+	swag fmt ./...
+
+PHONY: swag_init
+swag_init:
+	swag init -o ./docs/ \
+	-d ./cmd/http/,.\pkg/adapter/handler/ \
+	-pd ./pkg/logic/iodata/
+
+PHONY: wire
+wire:
+	wire ./pkg/registry/app_container.go
