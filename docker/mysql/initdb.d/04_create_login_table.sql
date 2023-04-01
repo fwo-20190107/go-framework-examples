@@ -5,7 +5,8 @@ CREATE TABLE login (
     `user_id` int unsigned NOT NULL,
     `last_signed_at` datetime DEFAULT NULL,
     `password` varchar(32) NOT NULL,
-    PRIMARY KEY (`login_id`)
+    PRIMARY KEY (`login_id`),
+    INDEX idx_login_01 (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='ログイン情報';
 
 INSERT INTO login (
