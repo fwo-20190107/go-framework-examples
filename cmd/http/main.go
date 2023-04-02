@@ -9,6 +9,7 @@ import (
 	"examples/pkg/infra/sql/engine"
 	"examples/pkg/registry"
 	"os"
+	"strconv"
 
 	// registry の init() で使用する変数を初期化している
 	// ↓ を宣言して初期化を済ませておく必要があります
@@ -34,12 +35,14 @@ import (
 
 func main() {
 	if err := run(); err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err.Error())
 	}
 }
 
 func run() error {
-	config.LoadConfig()
+	if err := config.LoadConfig(); err != nil {
+		return err
+	}
 
 	con, err := engine.NewMysql()
 	if err != nil {
@@ -59,5 +62,5 @@ func run() error {
 
 	router.SetRoute(container)
 
-	return http.ListenAndServe(":8080", nil)
+	return http.ListenAndServe(":"+strconv.Itoa(config.C.Server.Addr), nil)
 }

@@ -1,8 +1,9 @@
 package config
 
 import (
+	"examples/pkg/code"
+	"examples/pkg/errors"
 	"examples/pkg/util"
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -11,21 +12,25 @@ import (
 
 var C config
 
-func LoadConfig() {
+func LoadConfig() error {
 	path := filepath.Join(util.RootDir(), "config.toml")
 	file, err := os.Open(path)
 	if err != nil {
-		panic("failed load config")
+		return errors.Errorf(code.CodeInternal, "failed load config: %s\n", path)
 	}
 	defer file.Close()
 
 	decoder := toml.NewDecoder(file)
 	if err := decoder.Decode(&C); err != nil {
-		panic(fmt.Sprintf("failed decode: %v\n", err))
+		return errors.Errorf(code.CodeInternal, "failed decode: %v\n", err)
 	}
+	return nil
 }
 
 type config struct {
+	Server struct {
+		Addr int `toml:"addr"`
+	}
 	DB struct {
 		User   string `toml:"user"`
 		Passwd string `toml:"passwd"`
@@ -33,4 +38,8 @@ type config struct {
 		Addr   string `toml:"addr"`
 		DBName string `toml:"dbname"`
 	}
+	// DB struct {
+	// 	Schema   string `toml:"schema"`
+	// 	Testdata string `toml:"testdata"`
+	// }
 }

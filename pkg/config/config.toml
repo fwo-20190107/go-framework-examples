@@ -1,7 +1,14 @@
+[Server]
+  addr=8080
 
+# use MySQL
 [DB]
   user="user"
   passwd="userpass"
   net="tcp"
   addr="localhost:3306"
   dbname="app"
+
+# use sqlite3
+# [DB]
+#   schema="./db/app.db"
