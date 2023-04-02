@@ -28,7 +28,7 @@ func (r *loginRepository) GetByID(ctx context.Context, loginID string) (*entity.
 
 	var login model.Login
 	if err := row.Scan(&login.LoginID, &login.UserID, &login.LastSignedAt, &login.Password); err != nil {
-		return nil, errors.Wrap(code.ErrNotFound, err)
+		return nil, errors.Wrap(code.CodeNotFound, err)
 	}
 	return &entity.Login{
 		LoginID:      login.LoginID,
@@ -47,7 +47,7 @@ func (r *loginRepository) GetByUserID(ctx context.Context, userID int) (*entity.
 
 	var login model.Login
 	if err := row.Scan(&login.LoginID, &login.UserID, &login.LastSignedAt, &login.Password); err != nil {
-		return nil, errors.Wrap(code.ErrNotFound, err)
+		return nil, errors.Wrap(code.CodeNotFound, err)
 	}
 	return &entity.Login{
 		LoginID:      login.LoginID,

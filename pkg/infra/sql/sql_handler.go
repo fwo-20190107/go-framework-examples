@@ -25,13 +25,13 @@ func NewSqlHandler(master, slave *sql.DB) *sqlHandler {
 func (h *sqlHandler) Execute(ctx context.Context, query string, args ...any) (sql.Result, error) {
 	stmt, err := h.master.PrepareContext(ctx, query)
 	if err != nil {
-		return nil, errors.Wrap(code.ErrDatabase, err)
+		return nil, errors.Wrap(code.CodeDatabase, err)
 	}
 	defer stmt.Close()
 
 	res, err := stmt.ExecContext(ctx, args...)
 	if err != nil {
-		return nil, errors.Wrap(code.ErrDatabase, err)
+		return nil, errors.Wrap(code.CodeDatabase, err)
 	}
 	return res, nil
 }
@@ -39,7 +39,7 @@ func (h *sqlHandler) Execute(ctx context.Context, query string, args ...any) (sq
 func (h *sqlHandler) QueryRow(ctx context.Context, query string, args ...any) (*sql.Row, error) {
 	stmt, err := h.slave.PrepareContext(ctx, query)
 	if err != nil {
-		return nil, errors.Wrap(code.ErrDatabase, err)
+		return nil, errors.Wrap(code.CodeDatabase, err)
 	}
 	defer stmt.Close()
 
@@ -50,16 +50,16 @@ func (h *sqlHandler) QueryRow(ctx context.Context, query string, args ...any) (*
 func (h *sqlHandler) Query(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
 	stmt, err := h.slave.PrepareContext(ctx, query)
 	if err != nil {
-		return nil, errors.Wrap(code.ErrDatabase, err)
+		return nil, errors.Wrap(code.CodeDatabase, err)
 	}
 	defer stmt.Close()
 
 	rows, err := stmt.QueryContext(ctx, args...)
 	if err != nil {
-		c := code.ErrDatabase
+		c := code.CodeDatabase
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
-			c = code.ErrNotFound
+			c = code.CodeNotFound
 		}
 		return nil, errors.Wrap(c, err)
 	}
@@ -69,10 +69,10 @@ func (h *sqlHandler) Query(ctx context.Context, query string, args ...any) (*sql
 func InitializeDb(con *sql.DB) error {
 	s := sqlfile.New()
 	if err := s.Directory("../testdata"); err != nil {
-		return errors.Wrap(code.ErrInternal, err)
+		return errors.Wrap(code.CodeInternal, err)
 	}
 	if _, err := s.Exec(con); err != nil {
-		return errors.Wrap(code.ErrDatabase, err)
+		return errors.Wrap(code.CodeDatabase, err)
 	}
 	return nil
 }

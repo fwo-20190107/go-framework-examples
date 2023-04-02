@@ -33,7 +33,7 @@ func (m *AuthMiddleware) WithCheckToken(next http.Handler) http.HandlerFunc {
 
 		token := r.Header.Get("Authorization")
 		if !strings.HasPrefix(token, tokenPrefix) {
-			warnLog(ctx, errors.Errorf(code.ErrUnauthorized, "Bearer token is required."))
+			warnLog(ctx, errors.Errorf(code.CodeUnauthorized, "Bearer token is required."))
 			unauthorized(w)
 			return
 		}
@@ -41,7 +41,7 @@ func (m *AuthMiddleware) WithCheckToken(next http.Handler) http.HandlerFunc {
 
 		userID, ok := m.sessionRepository.Get(ctx, token)
 		if !ok {
-			warnLog(ctx, errors.Errorf(code.ErrUnauthorized, "Request token is invalid."))
+			warnLog(ctx, errors.Errorf(code.CodeUnauthorized, "Request token is invalid."))
 			unauthorized(w)
 			return
 		}

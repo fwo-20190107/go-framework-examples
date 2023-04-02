@@ -49,7 +49,7 @@ func GetAccessToken(ctx context.Context) (string, error) {
 func getUserInfo(ctx context.Context) (userInfo, error) {
 	info, ok := ctx.Value(&userInfoKey).(userInfo)
 	if !ok {
-		return userInfo{}, errors.Errorf(code.ErrBadRequest, "unset user info")
+		return userInfo{}, errors.Errorf(code.CodeBadRequest, "unset user info")
 	}
 	return info, nil
 }

@@ -80,7 +80,7 @@ func (h *userHandler) getAll(ctx context.Context, httpCtx infra.HttpContext) *in
 	if err != nil {
 		r := ErrUnexpected
 		switch {
-		case errors.Is(err, code.ErrNotFound):
+		case errors.Is(err, code.CodeNotFound):
 			r = NewHTTPError("エラー", "ユーザーデータなし")
 		}
 		return &infra.HandleError{HTTPError: r, Error: err}
@@ -120,7 +120,7 @@ func (h *userHandler) getByID(ctx context.Context, httpCtx infra.HttpContext, us
 	if err != nil {
 		r := ErrUnexpected
 		switch {
-		case errors.Is(err, code.ErrNotFound):
+		case errors.Is(err, code.CodeNotFound):
 			r = NewHTTPError("エラー", "ユーザーデータなし")
 		}
 		return &infra.HandleError{HTTPError: r, Error: err}
@@ -157,7 +157,7 @@ func (h *userHandler) modifyAuthority(ctx context.Context, httpCtx infra.HttpCon
 	if ok, err := h.userLogic.Authorization(ctx, requiredAuthority); err != nil {
 		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
 	} else if !ok {
-		err = errors.Errorf(code.ErrUnauthorized, "lack of authority: %d", requiredAuthority)
+		err = errors.Errorf(code.CodeUnauthorized, "lack of authority: %d", requiredAuthority)
 		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
 	}
 
@@ -251,7 +251,7 @@ func (h *userHandler) HandleRoot(ctx context.Context, httpCtx infra.HttpContext)
 	uidp, ok := vars["user_id"]
 	if ok {
 		if userID, err = strconv.Atoi(uidp); err != nil {
-			return &infra.HandleError{HTTPError: ErrValidParam, Error: errors.Errorf(code.ErrBadRequest, "path is not number")}
+			return &infra.HandleError{HTTPError: ErrValidParam, Error: errors.Errorf(code.CodeBadRequest, "path is not number")}
 		}
 	}
 

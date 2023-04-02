@@ -28,10 +28,10 @@ func (r *userRepository) GetByID(ctx context.Context, userID int) (*entity.User,
 
 	var user model.User
 	if err := row.Scan(&user.UserID, &user.Name, &user.Authority); err != nil {
-		c := code.ErrDatabase
+		c := code.CodeDatabase
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
-			c = code.ErrNotFound
+			c = code.CodeNotFound
 		}
 		return nil, errors.Wrap(c, err)
 	}
@@ -57,7 +57,7 @@ func (r *userRepository) GetAll(ctx context.Context) ([]entity.User, error) {
 			&user.Name,
 			&user.Authority,
 		); err != nil {
-			return nil, errors.Wrap(code.ErrDatabase, err)
+			return nil, errors.Wrap(code.CodeDatabase, err)
 		}
 		users = append(users, entity.User{
 			UserID:    user.UserID,
@@ -76,7 +76,7 @@ func (r *userRepository) Store(ctx context.Context, user *entity.User) (int64, e
 	}
 	userID, err := result.LastInsertId()
 	if err != nil {
-		return 0, errors.Wrap(code.ErrDatabase, err)
+		return 0, errors.Wrap(code.CodeDatabase, err)
 	}
 	return userID, nil
 }

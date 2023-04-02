@@ -14,7 +14,7 @@ type applicationError struct {
 }
 
 func Errorf(c code.ErrorCode, format string, args ...any) error {
-	if errors.Is(c, code.ErrOK) {
+	if errors.Is(c, code.CodeOK) {
 		return nil
 	}
 	return &applicationError{
@@ -25,7 +25,7 @@ func Errorf(c code.ErrorCode, format string, args ...any) error {
 }
 
 func Wrap(c code.ErrorCode, err error) error {
-	if err == nil || errors.Is(c, code.ErrOK) {
+	if err == nil || errors.Is(c, code.CodeOK) {
 		return nil
 	}
 	return &applicationError{
@@ -58,28 +58,28 @@ func HTTPStatus(err error) int {
 
 func errorCode(err error) code.ErrorCode {
 	if err == nil {
-		return code.ErrOK
+		return code.CodeOK
 	}
 	var e *applicationError
 	if errors.As(err, &e) {
 		return e.code
 	}
-	return code.ErrUnknown
+	return code.CodeUnknown
 }
 
 var _ error = (*applicationError)(nil)
 
 var statusMap = map[code.ErrorCode]int{
-	code.ErrOK: http.StatusOK,
+	code.CodeOK: http.StatusOK,
 
-	code.ErrBadRequest:   http.StatusBadRequest,
-	code.ErrValidParam:   http.StatusBadRequest,
-	code.ErrUnauthorized: http.StatusUnauthorized,
-	code.ErrNotFound:     http.StatusNotFound,
-	code.ErrOutOfTerm:    http.StatusNotFound,
+	code.CodeBadRequest:   http.StatusBadRequest,
+	code.CodeValidParam:   http.StatusBadRequest,
+	code.CodeUnauthorized: http.StatusUnauthorized,
+	code.CodeNotFound:     http.StatusNotFound,
+	code.CodeOutOfTerm:    http.StatusNotFound,
 
-	code.ErrDatabase: http.StatusInternalServerError,
-	code.ErrInternal: http.StatusInternalServerError,
+	code.CodeDatabase: http.StatusInternalServerError,
+	code.CodeInternal: http.StatusInternalServerError,
 
-	code.ErrUnknown: http.StatusInternalServerError,
+	code.CodeUnknown: http.StatusInternalServerError,
 }

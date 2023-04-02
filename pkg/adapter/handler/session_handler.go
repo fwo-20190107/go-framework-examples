@@ -66,10 +66,10 @@ func (h *sessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) 
 	if err != nil {
 		r := ErrUnexpected
 		switch {
-		case errors.Is(err, code.ErrNotFound):
+		case errors.Is(err, code.CodeNotFound):
 			// 正しくユーザー登録が行われていればエラーとならない
 			// このケースは問題があるのでエラーレベルを引き上げる
-			err = errors.Errorf(code.ErrInternal, err.Error())
+			err = errors.Errorf(code.CodeInternal, err.Error())
 			r = NewHTTPError("整合性エラー", "ログインIDに紐付くユーザー情報が見つかりません")
 		}
 		return &infra.HandleError{HTTPError: r, Error: err}

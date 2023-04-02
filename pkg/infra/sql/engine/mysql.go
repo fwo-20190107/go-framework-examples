@@ -22,7 +22,7 @@ func NewMysql() (*sql.DB, error) {
 	//
 	db, err := sql.Open("mysql", cnf.FormatDSN())
 	if err != nil {
-		return nil, errors.Errorf(code.ErrDatabase, err.Error())
+		return nil, errors.Errorf(code.CodeDatabase, err.Error())
 	}
 	return db, nil
 }

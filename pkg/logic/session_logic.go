@@ -40,7 +40,7 @@ func (l *sessionLogic) Signin(ctx context.Context, input *iodata.SigninInput) (i
 	login, err := l.loginRepository.GetByID(ctx, input.LoginID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return 0, errors.Errorf(code.ErrNotFound, err.Error())
+			return 0, errors.Errorf(code.CodeNotFound, err.Error())
 		}
 		return 0, err
 	}
@@ -49,7 +49,7 @@ func (l *sessionLogic) Signin(ctx context.Context, input *iodata.SigninInput) (i
 	// 当然ダメなのでパスワードは最低限ハッシュ化して保存し、
 	// 比較には bcrypt.CompareHashAndPassword() を使用すること
 	if login.Password != input.Password {
-		return 0, errors.Errorf(code.ErrBadRequest, "wrong loginID or password")
+		return 0, errors.Errorf(code.CodeBadRequest, "wrong loginID or password")
 	}
 
 	if err := l.loginRepository.ModifyLastSigned(ctx, login.LoginID); err != nil {
@@ -80,7 +80,7 @@ func (l *sessionLogic) Start(ctx context.Context, userID int) (string, error) {
 func (m *sessionLogic) publishToken(ctx context.Context) (string, error) {
 	id, err := m.sonyflake.NextID()
 	if err != nil {
-		return "", errors.Wrap(code.ErrInternal, err)
+		return "", errors.Wrap(code.CodeInternal, err)
 	}
 
 	bytesID := make([]byte, binary.MaxVarintLen64)
@@ -88,7 +88,7 @@ func (m *sessionLogic) publishToken(ctx context.Context) (string, error) {
 
 	token, err := bcrypt.GenerateFromPassword(bytesID, 4)
 	if err != nil {
-		return "", errors.Wrap(code.ErrInternal, err)
+		return "", errors.Wrap(code.CodeInternal, err)
 	}
 	return string(token), nil
 }

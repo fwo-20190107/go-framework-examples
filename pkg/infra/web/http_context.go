@@ -37,7 +37,7 @@ func (c *httpContext) Vars(prefix string, keys ...string) (map[string]string, er
 	path := strings.TrimPrefix(strings.TrimPrefix(c.URL().Path, prefix), "/")
 	param := strings.Split(path, "/")
 	if len(param) > len(keys) {
-		return nil, errors.Errorf(code.ErrBadRequest, "invalid request path: %s", c.URL().Path)
+		return nil, errors.Errorf(code.CodeBadRequest, "invalid request path: %s", c.URL().Path)
 	}
 
 	vars := make(map[string]string, len(param))
@@ -53,7 +53,7 @@ func (c *httpContext) Vars(prefix string, keys ...string) (map[string]string, er
 func (c *httpContext) Decode(v any) error {
 	decoder := json.NewDecoder(c.r.Body)
 	if err := decoder.Decode(&v); err != nil {
-		return errors.Wrap(code.ErrBadRequest, err)
+		return errors.Wrap(code.CodeBadRequest, err)
 	}
 	return nil
 }
@@ -61,7 +61,7 @@ func (c *httpContext) Decode(v any) error {
 func (c *httpContext) WriteJSON(status int, body any) error {
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
-		return errors.Errorf(code.ErrInternal, err.Error())
+		return errors.Errorf(code.CodeInternal, err.Error())
 	}
 
 	c.w.WriteHeader(status)

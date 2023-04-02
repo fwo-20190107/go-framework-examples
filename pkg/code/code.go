@@ -3,18 +3,18 @@ package code
 type ErrorCode string
 
 var (
-	ErrOK ErrorCode = "ok"
+	CodeOK ErrorCode = "ok"
 
-	ErrBadRequest   ErrorCode = "bad request"
-	ErrUnauthorized ErrorCode = "unauthorized"
-	ErrValidParam   ErrorCode = "valid parameter"
-	ErrNotFound     ErrorCode = "not found"
-	ErrOutOfTerm    ErrorCode = "out of term"
+	CodeBadRequest   ErrorCode = "bad request"
+	CodeUnauthorized ErrorCode = "unauthorized"
+	CodeValidParam   ErrorCode = "valid parameter"
+	CodeNotFound     ErrorCode = "not found"
+	CodeOutOfTerm    ErrorCode = "out of term"
 
-	ErrDatabase ErrorCode = "database error"
-	ErrInternal ErrorCode = "internal error"
+	CodeDatabase ErrorCode = "database error"
+	CodeInternal ErrorCode = "internal error"
 
-	ErrUnknown ErrorCode = "unknown error"
+	CodeUnknown ErrorCode = "unknown error"
 )
 
 func (e ErrorCode) Error() string {
