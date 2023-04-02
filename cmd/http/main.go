@@ -47,7 +47,7 @@ func run() error {
 	}
 
 	// infrastracture datasource accesssor
-	sqlh := sql.NewSqlHandler(con, con)
+	sqlh := sql.NewSqlHandler(con)
 	store := cache.NewLocalStore()
 
 	// setup middleware

@@ -11,19 +11,17 @@ import (
 )
 
 type sqlHandler struct {
-	master *sql.DB
-	slave  *sql.DB
+	con *sql.DB
 }
 
-func NewSqlHandler(master, slave *sql.DB) *sqlHandler {
+func NewSqlHandler(con *sql.DB) *sqlHandler {
 	return &sqlHandler{
-		master: master,
-		slave:  slave,
+		con: con,
 	}
 }
 
 func (h *sqlHandler) Execute(ctx context.Context, query string, args ...any) (sql.Result, error) {
-	stmt, err := h.master.PrepareContext(ctx, query)
+	stmt, err := h.con.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, errors.Wrap(code.CodeDatabase, err)
 	}
@@ -37,7 +35,7 @@ func (h *sqlHandler) Execute(ctx context.Context, query string, args ...any) (sq
 }
 
 func (h *sqlHandler) QueryRow(ctx context.Context, query string, args ...any) (*sql.Row, error) {
-	stmt, err := h.slave.PrepareContext(ctx, query)
+	stmt, err := h.con.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, errors.Wrap(code.CodeDatabase, err)
 	}
@@ -48,7 +46,7 @@ func (h *sqlHandler) QueryRow(ctx context.Context, query string, args ...any) (*
 }
 
 func (h *sqlHandler) Query(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
-	stmt, err := h.slave.PrepareContext(ctx, query)
+	stmt, err := h.con.PrepareContext(ctx, query)
 	if err != nil {
 		return nil, errors.Wrap(code.CodeDatabase, err)
 	}
