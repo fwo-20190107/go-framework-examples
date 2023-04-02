@@ -12,6 +12,7 @@ var (
 	CodeOutOfTerm    ErrorCode = "out of term"
 
 	CodeDatabase ErrorCode = "database error"
+	CodeKvs      ErrorCode = "kvs error"
 	CodeInternal ErrorCode = "internal error"
 
 	CodeUnknown ErrorCode = "unknown error"
