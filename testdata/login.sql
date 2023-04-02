@@ -5,6 +5,8 @@ CREATE TABLE login (
     `password` TEXT NOT NULL
 );
 
+CREATE INDEX idx_login_01 ON login(`user_id`);
+
 INSERT INTO login (
     `login_id`,
     `user_id`,
