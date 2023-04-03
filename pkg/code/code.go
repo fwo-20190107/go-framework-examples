@@ -15,7 +15,8 @@ var (
 	CodeKvs      ErrorCode = "kvs error"
 	CodeInternal ErrorCode = "internal error"
 
-	CodeUnknown ErrorCode = "unknown error"
+	CodeImplements ErrorCode = "implement error"
+	CodeUnknown    ErrorCode = "unknown error"
 )
 
 func (e ErrorCode) Error() string {
