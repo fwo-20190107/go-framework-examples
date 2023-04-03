@@ -26,11 +26,11 @@ func (t *tx) Do(ctx context.Context, fn repository.TxExecFunc) (interface{}, err
 	if err := t.BeginTx(ctx, opt); err != nil {
 		return nil, errors.Wrap(code.CodeDatabase, err)
 	}
+	defer t.Rollback()
 
 	ctx = context.WithValue(ctx, &txKey, t)
 	v, err := fn(ctx)
 	if err != nil {
-		t.Rollback()
 		return nil, errors.Wrap(code.CodeDatabase, err)
 	}
 
