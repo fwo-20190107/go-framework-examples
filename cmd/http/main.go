@@ -51,6 +51,7 @@ func run() error {
 
 	// infrastracture datasource accesssor
 	sqlh := sql.NewSqlHandler(con)
+	txh := sql.NewTxHandler(con)
 	store := cache.NewLocalStore()
 
 	// setup middleware
@@ -58,7 +59,7 @@ func run() error {
 	middleware.InitLoggerMiddleware(os.Stdout)
 
 	// application DI container
-	container := registry.InitializeAppContainer(sqlh, store)
+	container := registry.InitializeAppContainer(sqlh, txh, store)
 
 	router.SetRoute(container)
 

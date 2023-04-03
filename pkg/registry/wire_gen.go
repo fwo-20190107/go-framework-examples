@@ -16,10 +16,11 @@ import (
 // Injectors from app_container.go:
 
 // wire用
-func InitializeAppContainer(sqlh infra.SqlHandler, store infra.LocalStore) *handler.AppContainer {
+func InitializeAppContainer(sqlh infra.SqlHandler, txh infra.TxHandler, store infra.LocalStore) *handler.AppContainer {
 	userRepository := repository.NewUserRepository(sqlh)
 	loginRepository := repository.NewLoginRepository(sqlh)
-	userLogic := logic.NewUserLogic(userRepository, loginRepository)
+	transaction := repository.NewTransaction(txh)
+	userLogic := logic.NewUserLogic(userRepository, loginRepository, transaction)
 	userHandler := handler.NewUserHandler(userLogic)
 	sessionRepository := repository.NewSessionRepository(store)
 	sessionLogic := logic.NewSessionLogic(sessionRepository, loginRepository)

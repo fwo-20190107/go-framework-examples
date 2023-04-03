@@ -13,7 +13,7 @@ import (
 )
 
 // wire用
-func InitializeAppContainer(sqlh infra.SqlHandler, store infra.LocalStore) *handler.AppContainer {
+func InitializeAppContainer(sqlh infra.SqlHandler, txh infra.TxHandler, store infra.LocalStore) *handler.AppContainer {
 	wire.Build(
 		handler.NewAppContainer,
 		handler.NewUserHandler,
@@ -23,6 +23,7 @@ func InitializeAppContainer(sqlh infra.SqlHandler, store infra.LocalStore) *hand
 		repository.NewLoginRepository,
 		repository.NewUserRepository,
 		repository.NewSessionRepository,
+		repository.NewTransaction,
 	)
 	return &handler.AppContainer{}
 }

@@ -22,12 +22,18 @@ type UserLogic interface {
 type userLogic struct {
 	userRepository  repository.UserRepository
 	loginRepository repository.LoginRepository
+	transaction     repository.Transaction
 }
 
-func NewUserLogic(userRepository repository.UserRepository, loginRepository repository.LoginRepository) UserLogic {
+func NewUserLogic(
+	userRepository repository.UserRepository,
+	loginRepository repository.LoginRepository,
+	transaction repository.Transaction,
+) UserLogic {
 	return &userLogic{
 		userRepository:  userRepository,
 		loginRepository: loginRepository,
+		transaction:     transaction,
 	}
 }
 
@@ -48,21 +54,26 @@ func (l *userLogic) GetAll(ctx context.Context) ([]entity.User, error) {
 }
 
 func (l *userLogic) Signup(ctx context.Context, input *iodata.SignupInput) error {
-	user := &entity.User{
-		Name:      input.Name,
-		Authority: defaultAutority,
-	}
-	userID, err := l.userRepository.Store(ctx, user)
-	if err != nil {
-		return err
-	}
+	if _, err := l.transaction.Do(ctx, func(ctx context.Context) (any, error) {
+		user := &entity.User{
+			Name:      input.Name,
+			Authority: defaultAutority,
+		}
+		userID, err := l.userRepository.Store(ctx, user)
+		if err != nil {
+			return nil, err
+		}
 
-	login := &entity.Login{
-		LoginID:  input.LoginID,
-		UserID:   int(userID),
-		Password: input.Password,
-	}
-	if err := l.loginRepository.Store(ctx, login); err != nil {
+		login := &entity.Login{
+			LoginID:  input.LoginID,
+			UserID:   int(userID),
+			Password: input.Password,
+		}
+		if err := l.loginRepository.Store(ctx, login); err != nil {
+			return nil, err
+		}
+		return nil, nil
+	}); err != nil {
 		return err
 	}
 	return nil
