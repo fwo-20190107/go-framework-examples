@@ -58,9 +58,9 @@ func (r *loginRepository) GetByUserID(ctx context.Context, userID int) (*entity.
 }
 
 func (r *loginRepository) Store(ctx context.Context, login *entity.Login) error {
-	e, ok := getExecuter(ctx)
-	if !ok {
-		return errors.Errorf(code.CodeDatabase, "failed to get executer")
+	e, err := getExecutor(ctx)
+	if err != nil {
+		return err
 	}
 
 	query := "INSERT INTO login (`login_id`, `user_id`, `password`) VALUES (?, ?, ?)"
@@ -71,9 +71,9 @@ func (r *loginRepository) Store(ctx context.Context, login *entity.Login) error 
 }
 
 func (r *loginRepository) ModifyLastSigned(ctx context.Context, loginID string) error {
-	e, ok := getExecuter(ctx)
-	if !ok {
-		return errors.Errorf(code.CodeDatabase, "failed to get executer")
+	e, err := getExecutor(ctx)
+	if err != nil {
+		return err
 	}
 
 	query := "UPDATE login SET last_signed_at = ? WHERE login_id = ?"

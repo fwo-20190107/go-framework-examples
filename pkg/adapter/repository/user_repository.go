@@ -69,9 +69,9 @@ func (r *userRepository) GetAll(ctx context.Context) ([]entity.User, error) {
 }
 
 func (r *userRepository) Store(ctx context.Context, user *entity.User) (int64, error) {
-	e, ok := getExecuter(ctx)
-	if !ok {
-		return 0, errors.Errorf(code.CodeDatabase, "failed to get executer")
+	e, err := getExecutor(ctx)
+	if err != nil {
+		return 0, err
 	}
 
 	query := "INSERT INTO user (`name`, `authority`) VALUES (?, ?)"
@@ -87,9 +87,9 @@ func (r *userRepository) Store(ctx context.Context, user *entity.User) (int64, e
 }
 
 func (r *userRepository) ModifyAuthority(ctx context.Context, userID int, authority int8) error {
-	e, ok := getExecuter(ctx)
-	if !ok {
-		return errors.Errorf(code.CodeDatabase, "failed to get executer")
+	e, err := getExecutor(ctx)
+	if err != nil {
+		return err
 	}
 
 	query := "UPDATE user SET authority = ? WHERE user_id = ?"
@@ -100,9 +100,9 @@ func (r *userRepository) ModifyAuthority(ctx context.Context, userID int, author
 }
 
 func (r *userRepository) ModifyName(ctx context.Context, userID int, name string) error {
-	e, ok := getExecuter(ctx)
-	if !ok {
-		return errors.Errorf(code.CodeDatabase, "failed to get executer")
+	e, err := getExecutor(ctx)
+	if err != nil {
+		return err
 	}
 
 	query := "UPDATE user SET name = ? WHERE user_id = ?"
