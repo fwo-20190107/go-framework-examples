@@ -10,6 +10,7 @@ type Executer interface {
 }
 
 type TxHandler interface {
+	Executer
 	BeginTx(ctx context.Context, opt *sql.TxOptions) error
 	Commit() error
 	Rollback() error
