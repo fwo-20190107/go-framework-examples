@@ -40,9 +40,12 @@ func (t *tx) Do(ctx context.Context, fn repository.TxExecFunc) (interface{}, err
 	return v, nil
 }
 
-func getExecuter(ctx context.Context) (infra.Executer, bool) {
-	e, ok := ctx.Value(&txKey).(infra.Executer)
-	return e, ok
+func getExecutor(ctx context.Context) (infra.Executor, error) {
+	e, ok := ctx.Value(&txKey).(infra.Executor)
+	if !ok {
+		return nil, errors.Errorf(code.CodeImplements, "failed to load executor from context")
+	}
+	return e, nil
 }
 
 var _ repository.Transaction = (*tx)(nil)

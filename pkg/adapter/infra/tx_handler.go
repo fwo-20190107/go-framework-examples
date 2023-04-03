@@ -5,12 +5,12 @@ import (
 	"database/sql"
 )
 
-type Executer interface {
+type Executor interface {
 	Execute(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
 }
 
 type TxHandler interface {
-	Executer
+	Executor
 	BeginTx(ctx context.Context, opt *sql.TxOptions) error
 	Commit() error
 	Rollback() error
