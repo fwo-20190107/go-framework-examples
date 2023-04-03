@@ -20,20 +20,6 @@ func NewSqlHandler(con *sql.DB) *sqlHandler {
 	}
 }
 
-func (h *sqlHandler) Execute(ctx context.Context, query string, args ...any) (sql.Result, error) {
-	stmt, err := h.con.PrepareContext(ctx, query)
-	if err != nil {
-		return nil, errors.Wrap(code.CodeDatabase, err)
-	}
-	defer stmt.Close()
-
-	res, err := stmt.ExecContext(ctx, args...)
-	if err != nil {
-		return nil, errors.Wrap(code.CodeDatabase, err)
-	}
-	return res, nil
-}
-
 func (h *sqlHandler) QueryRow(ctx context.Context, query string, args ...any) (*sql.Row, error) {
 	stmt, err := h.con.PrepareContext(ctx, query)
 	if err != nil {

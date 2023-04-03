@@ -6,7 +6,6 @@ import (
 )
 
 type SqlHandler interface {
-	Execute(ctx context.Context, query string, args ...any) (sql.Result, error)
 	QueryRow(ctx context.Context, query string, args ...any) (*sql.Row, error)
 	Query(ctx context.Context, query string, args ...any) (*sql.Rows, error)
 }
