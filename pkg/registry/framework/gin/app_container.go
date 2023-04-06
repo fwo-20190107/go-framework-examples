@@ -4,7 +4,7 @@
 package registry
 
 import (
-	"examples/pkg/adapter/handler"
+	"examples/pkg/adapter/framework/gin/handler"
 	"examples/pkg/adapter/infra"
 	"examples/pkg/adapter/repository"
 	"examples/pkg/logic"

@@ -2,7 +2,8 @@ package web
 
 import (
 	"encoding/json"
-	"examples/pkg/adapter/infra"
+	"examples/pkg/adapter/framework/http/infra"
+	commonInfra "examples/pkg/adapter/infra"
 	"examples/pkg/code"
 	"examples/pkg/errors"
 	"net/http"
@@ -71,7 +72,7 @@ func (c *httpContext) WriteJSON(status int, body any) error {
 	return nil
 }
 
-func (c *httpContext) WriteError(status int, res *infra.HTTPError) error {
+func (c *httpContext) WriteError(status int, res *commonInfra.HTTPError) error {
 	return c.WriteJSON(status, res)
 }
 

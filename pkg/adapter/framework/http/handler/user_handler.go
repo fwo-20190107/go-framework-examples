@@ -2,7 +2,9 @@ package handler
 
 import (
 	"context"
-	"examples/pkg/adapter/infra"
+	"examples/pkg/adapter/framework/http/infra"
+	"examples/pkg/adapter/handler"
+	cInfra "examples/pkg/adapter/infra"
 	"examples/pkg/code"
 	"examples/pkg/errors"
 	"examples/pkg/logger"
@@ -15,8 +17,8 @@ import (
 )
 
 type UserHandler interface {
-	Signup(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError
-	HandleRoot(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError
+	Signup(ctx context.Context, httpCtx infra.HttpContext) *cInfra.HandleError
+	HandleRoot(ctx context.Context, httpCtx infra.HttpContext) *cInfra.HandleError
 }
 
 type userHandler struct {
@@ -42,22 +44,22 @@ func NewUserHandler(userLogic logic.UserLogic) UserHandler {
 //	@Failure		404	{object}	infra.HTTPError
 //	@Failure		500	{object}	infra.HTTPError
 //	@Router			/signup [post]
-func (h *userHandler) Signup(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
+func (h *userHandler) Signup(ctx context.Context, httpCtx infra.HttpContext) *cInfra.HandleError {
 	if httpCtx.Method() != http.MethodPost {
-		return &infra.HandleError{HTTPError: ErrPathNotExist}
+		return &cInfra.HandleError{HTTPError: handler.ErrPathNotExist}
 	}
 
 	var input *iodata.SignupInput
 	if err := httpCtx.Decode(&input); err != nil {
-		return &infra.HandleError{HTTPError: ErrValidParam, Error: err}
+		return &cInfra.HandleError{HTTPError: handler.ErrValidParam, Error: err}
 	}
 
 	if err := input.Validate(); err != nil {
-		return &infra.HandleError{HTTPError: ErrValidParam, Error: err}
+		return &cInfra.HandleError{HTTPError: handler.ErrValidParam, Error: err}
 	}
 
 	if err := h.userLogic.Signup(ctx, input); err != nil {
-		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
+		return &cInfra.HandleError{HTTPError: handler.ErrUnexpected, Error: err}
 	}
 	return nil
 }
@@ -75,15 +77,15 @@ func (h *userHandler) Signup(ctx context.Context, httpCtx infra.HttpContext) *in
 //	@Failure		500	{object}	infra.HTTPError
 //	@Security		Bearer
 //	@Router			/user [get]
-func (h *userHandler) getAll(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
+func (h *userHandler) getAll(ctx context.Context, httpCtx infra.HttpContext) *cInfra.HandleError {
 	users, err := h.userLogic.GetAll(ctx)
 	if err != nil {
-		r := ErrUnexpected
+		r := handler.ErrUnexpected
 		switch {
 		case errors.Is(err, code.CodeNotFound):
-			r = NewHTTPError("エラー", "ユーザーデータなし")
+			r = handler.NewHTTPError("エラー", "ユーザーデータなし")
 		}
-		return &infra.HandleError{HTTPError: r, Error: err}
+		return &cInfra.HandleError{HTTPError: r, Error: err}
 	}
 
 	// ここの変換処理は Presenter が本来担当する
@@ -96,7 +98,7 @@ func (h *userHandler) getAll(ctx context.Context, httpCtx infra.HttpContext) *in
 		})
 	}
 	if err := httpCtx.WriteJSON(http.StatusOK, output); err != nil {
-		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
+		return &cInfra.HandleError{HTTPError: handler.ErrUnexpected, Error: err}
 	}
 	return nil
 }
@@ -115,15 +117,15 @@ func (h *userHandler) getAll(ctx context.Context, httpCtx infra.HttpContext) *in
 //	@Failure		500		{object}	infra.HTTPError
 //	@Security		Bearer
 //	@Router			/user/{user_id} [get]
-func (h *userHandler) getByID(ctx context.Context, httpCtx infra.HttpContext, userID int) *infra.HandleError {
+func (h *userHandler) getByID(ctx context.Context, httpCtx infra.HttpContext, userID int) *cInfra.HandleError {
 	user, err := h.userLogic.GetByID(ctx, userID)
 	if err != nil {
-		r := ErrUnexpected
+		r := handler.ErrUnexpected
 		switch {
 		case errors.Is(err, code.CodeNotFound):
-			r = NewHTTPError("エラー", "ユーザーデータなし")
+			r = handler.NewHTTPError("エラー", "ユーザーデータなし")
 		}
-		return &infra.HandleError{HTTPError: r, Error: err}
+		return &cInfra.HandleError{HTTPError: r, Error: err}
 	}
 
 	if err := httpCtx.WriteJSON(http.StatusOK, iodata.UserOutput{
@@ -131,7 +133,7 @@ func (h *userHandler) getByID(ctx context.Context, httpCtx infra.HttpContext, us
 		Name:      user.Name,
 		Authority: user.Authority,
 	}); err != nil {
-		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
+		return &cInfra.HandleError{HTTPError: handler.ErrUnexpected, Error: err}
 	}
 	return nil
 }
@@ -151,26 +153,26 @@ func (h *userHandler) getByID(ctx context.Context, httpCtx infra.HttpContext, us
 //	@Failure		500		{object}	infra.HTTPError
 //	@Security		Bearer
 //	@Router			/user/{user_id} [patch]
-func (h *userHandler) modifyAuthority(ctx context.Context, httpCtx infra.HttpContext, userID int) *infra.HandleError {
+func (h *userHandler) modifyAuthority(ctx context.Context, httpCtx infra.HttpContext, userID int) *cInfra.HandleError {
 	// リクエスト者の権限を確認
 	const requiredAuthority = 99
 	if ok, err := h.userLogic.Authorization(ctx, requiredAuthority); err != nil {
-		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
+		return &cInfra.HandleError{HTTPError: handler.ErrUnexpected, Error: err}
 	} else if !ok {
 		err = errors.Errorf(code.CodeUnauthorized, "lack of authority: %d", requiredAuthority)
-		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
+		return &cInfra.HandleError{HTTPError: handler.ErrUnexpected, Error: err}
 	}
 
 	var input *iodata.ModifyAuthorityInput
 	if err := httpCtx.Decode(&input); err != nil {
-		return &infra.HandleError{HTTPError: ErrValidParam, Error: err}
+		return &cInfra.HandleError{HTTPError: handler.ErrValidParam, Error: err}
 	}
 	if err := input.Validate(); err != nil {
-		return &infra.HandleError{}
+		return &cInfra.HandleError{}
 	}
 
 	if err := h.userLogic.ModifyAuthority(ctx, userID, input.Authority); err != nil {
-		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
+		return &cInfra.HandleError{HTTPError: handler.ErrUnexpected, Error: err}
 	}
 
 	// 更新後データ 再取得
@@ -178,7 +180,7 @@ func (h *userHandler) modifyAuthority(ctx context.Context, httpCtx infra.HttpCon
 	// エラーが返却されていても、ログ出力のみに留め正常終了扱いでレスポンスを返却する
 	user, err := h.userLogic.GetByID(ctx, userID)
 	if err != nil {
-		logger.L.Warn(ctx, fmt.Sprint(err))
+		logger.L.Warn(fmt.Sprint(err))
 	}
 
 	if err := httpCtx.WriteJSON(http.StatusOK, iodata.UserOutput{
@@ -186,7 +188,7 @@ func (h *userHandler) modifyAuthority(ctx context.Context, httpCtx infra.HttpCon
 		Name:      user.Name,
 		Authority: user.Authority,
 	}); err != nil {
-		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
+		return &cInfra.HandleError{HTTPError: handler.ErrUnexpected, Error: err}
 	}
 	return nil
 }
@@ -205,22 +207,22 @@ func (h *userHandler) modifyAuthority(ctx context.Context, httpCtx infra.HttpCon
 //	@Failure		500		{object}	infra.HTTPError
 //	@Security		Bearer
 //	@Router			/user [patch]
-func (h *userHandler) modifyName(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
+func (h *userHandler) modifyName(ctx context.Context, httpCtx infra.HttpContext) *cInfra.HandleError {
 	userID, err := util.GetUserID(ctx)
 	if err != nil {
-		return &infra.HandleError{}
+		return &cInfra.HandleError{}
 	}
 
 	var input *iodata.ModifyNameInput
 	if err := httpCtx.Decode(&input); err != nil {
-		return &infra.HandleError{HTTPError: ErrValidParam, Error: err}
+		return &cInfra.HandleError{HTTPError: handler.ErrValidParam, Error: err}
 	}
 	if err := input.Validate(); err != nil {
-		return &infra.HandleError{}
+		return &cInfra.HandleError{}
 	}
 
 	if err := h.userLogic.ModifyName(ctx, userID, input.Name); err != nil {
-		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
+		return &cInfra.HandleError{HTTPError: handler.ErrUnexpected, Error: err}
 	}
 
 	// 更新後データ 再取得
@@ -228,7 +230,7 @@ func (h *userHandler) modifyName(ctx context.Context, httpCtx infra.HttpContext)
 	// エラーが返却されていても、ログ出力のみに留め正常終了扱いでレスポンスを返却する
 	user, err := h.userLogic.GetByID(ctx, userID)
 	if err != nil {
-		logger.L.Warn(ctx, fmt.Sprint(err))
+		logger.L.Warn(fmt.Sprint(err))
 	}
 
 	if err := httpCtx.WriteJSON(http.StatusOK, iodata.UserOutput{
@@ -236,22 +238,22 @@ func (h *userHandler) modifyName(ctx context.Context, httpCtx infra.HttpContext)
 		Name:      user.Name,
 		Authority: user.Authority,
 	}); err != nil {
-		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
+		return &cInfra.HandleError{HTTPError: handler.ErrUnexpected, Error: err}
 	}
 	return nil
 }
 
-func (h *userHandler) HandleRoot(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
+func (h *userHandler) HandleRoot(ctx context.Context, httpCtx infra.HttpContext) *cInfra.HandleError {
 	vars, err := httpCtx.Vars("/user", "user_id")
 	if err != nil {
-		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
+		return &cInfra.HandleError{HTTPError: handler.ErrUnexpected, Error: err}
 	}
 
 	var userID int
 	uidp, ok := vars["user_id"]
 	if ok {
 		if userID, err = strconv.Atoi(uidp); err != nil {
-			return &infra.HandleError{HTTPError: ErrValidParam, Error: errors.Errorf(code.CodeBadRequest, "path is not number")}
+			return &cInfra.HandleError{HTTPError: handler.ErrValidParam, Error: errors.Errorf(code.CodeBadRequest, "path is not number")}
 		}
 	}
 

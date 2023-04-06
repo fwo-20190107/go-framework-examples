@@ -1,7 +1,7 @@
 package web
 
 import (
-	"examples/pkg/adapter/infra"
+	"examples/pkg/adapter/framework/http/infra"
 	"examples/pkg/errors"
 	"examples/pkg/logger"
 	"fmt"
@@ -20,9 +20,9 @@ func (fn HttpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if err.Error != nil {
 			switch {
 			case status >= 500:
-				logger.L.Err(ctx, fmt.Sprint(err.Error))
+				logger.L.Err(fmt.Sprint(err.Error))
 			case status >= 400:
-				logger.L.Warn(ctx, fmt.Sprint(err.Error))
+				logger.L.Warn(fmt.Sprint(err.Error))
 			}
 		}
 		httpCtx.WriteError(status, err.HTTPError)

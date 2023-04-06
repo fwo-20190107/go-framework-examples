@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"examples/pkg/adapter/handler"
 	"examples/pkg/adapter/infra"
 	"examples/pkg/adapter/repository"
 	"examples/pkg/code"
@@ -13,6 +14,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 const tokenPrefix = "Bearer "
@@ -27,28 +30,25 @@ func InitAuthMiddleware(store infra.LocalStore) {
 	AuthMw = &AuthMiddleware{sessionRepository: repository.NewSessionRepository(store)}
 }
 
-func (m *AuthMiddleware) WithCheckToken(next http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-
-		token := r.Header.Get("Authorization")
+func (m *AuthMiddleware) WithCheckToken() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := c.GetHeader("Authorization")
 		if !strings.HasPrefix(token, tokenPrefix) {
-			warnLog(ctx, errors.Errorf(code.CodeUnauthorized, "Bearer token is required."))
-			unauthorized(w)
+			warnLog(c, errors.Errorf(code.CodeUnauthorized, "Bearer token is required."))
+			unauthorized(c)
 			return
 		}
 		token = strings.TrimPrefix(token, tokenPrefix)
 
-		userID, ok := m.sessionRepository.Get(ctx, token)
+		userID, ok := m.sessionRepository.Get(c, token)
 		if !ok {
-			warnLog(ctx, errors.Errorf(code.CodeUnauthorized, "Request token is invalid."))
-			unauthorized(w)
+			warnLog(c, errors.Errorf(code.CodeUnauthorized, "Request token is invalid."))
+			unauthorized(c)
 			return
 		}
-		ctx = util.SetUserInfo(ctx, token, userID)
-		r = r.WithContext(ctx)
+		c = (util.SetUserInfo(c, token, userID)).(*gin.Context)
 
-		next.ServeHTTP(w, r)
+		c.Next()
 	}
 }
 
@@ -58,8 +58,7 @@ func warnLog(ctx context.Context, err error) {
 	}
 }
 
-func unauthorized(w http.ResponseWriter) {
-	w.Header().Set("WWW-Authenticate", "Bearer error=\"invalid_token\"")
-	w.WriteHeader(http.StatusUnauthorized)
-	w.Write([]byte("invalid token"))
+func unauthorized(c *gin.Context) {
+	c.Header("WWW-Authenticate", "Bearer error=\"invalid_token\"")
+	c.JSON(http.StatusUnauthorized, handler.HTTPErrUnauthorized)
 }

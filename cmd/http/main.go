@@ -3,11 +3,11 @@ package main
 import (
 	"examples/pkg/config"
 	"examples/pkg/infra/cache"
-	"examples/pkg/infra/middleware"
-	"examples/pkg/infra/router"
+	"examples/pkg/infra/framework/http/middleware"
+	"examples/pkg/infra/framework/http/router"
 	"examples/pkg/infra/sql"
 	"examples/pkg/infra/sql/engine"
-	"examples/pkg/registry"
+	registry "examples/pkg/registry/framework/http"
 	"os"
 	"strconv"
 

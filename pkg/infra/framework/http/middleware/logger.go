@@ -1,12 +1,10 @@
 package middleware
 
 import (
-	"examples/pkg/infra/log"
-	"examples/pkg/infra/web"
-	"examples/pkg/logger"
-	"fmt"
+	"examples/pkg/infra/framework/http/web"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/rs/zerolog"
 )
@@ -25,14 +23,10 @@ func (m *loggerMiddleware) WithLogger(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		writer := web.NewResponseWriter(w, r)
 
-		ctx := log.NewLogContext(r.Context())
-		r = r.WithContext(ctx)
-
 		next.ServeHTTP(writer, r)
 
-		if err := logger.L.Send(ctx); err != nil {
-			fmt.Println(err)
+		if !strings.Contains(r.URL.Path, "swagger") {
+			m.logger.Info().Object("accesslog", writer).Send()
 		}
-		m.logger.Info().Object("accesslog", writer).Send()
 	}
 }

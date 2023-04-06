@@ -2,7 +2,9 @@ package handler
 
 import (
 	"context"
-	"examples/pkg/adapter/infra"
+	"examples/pkg/adapter/framework/http/infra"
+	"examples/pkg/adapter/handler"
+	cInfra "examples/pkg/adapter/infra"
 	"examples/pkg/code"
 	"examples/pkg/errors"
 	"examples/pkg/logic"
@@ -11,8 +13,8 @@ import (
 )
 
 type SessionHandler interface {
-	Signin(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError
-	Signout(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError
+	Signin(ctx context.Context, httpCtx infra.HttpContext) *cInfra.HandleError
+	Signout(ctx context.Context, httpCtx infra.HttpContext) *cInfra.HandleError
 }
 
 type sessionHandler struct {
@@ -40,45 +42,45 @@ func NewSessionHandler(userLogic logic.UserLogic, sessionLogic logic.SessionLogi
 //	@Failure		404		{object}	infra.HTTPError
 //	@Failure		500		{object}	infra.HTTPError
 //	@Router			/signin [post]
-func (h *sessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
+func (h *sessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) *cInfra.HandleError {
 	if httpCtx.Method() != http.MethodPost {
-		return &infra.HandleError{HTTPError: ErrPathNotExist}
+		return &cInfra.HandleError{HTTPError: handler.ErrPathNotExist}
 	}
 
 	var input *iodata.SigninInput
 	if err := httpCtx.Decode(&input); err != nil {
-		r := NewHTTPError("クライアントエラー", "リクエストされた値の取得に失敗しました")
-		return &infra.HandleError{HTTPError: r, Error: err}
+		r := handler.NewHTTPError("クライアントエラー", "リクエストされた値の取得に失敗しました")
+		return &cInfra.HandleError{HTTPError: r, Error: err}
 	}
 
 	if err := input.Validate(); err != nil {
-		return &infra.HandleError{HTTPError: ErrValidParam, Error: err}
+		return &cInfra.HandleError{HTTPError: handler.ErrValidParam, Error: err}
 	}
 
 	userID, err := h.sessionLogic.Signin(ctx, input)
 	if err != nil {
 		// サインイン失敗時は、後の攻撃を抑制するため詳細のエラーは返却しない
 		// e.g. ログインIDが存在しない / パスワードが不一致
-		return &infra.HandleError{HTTPError: ErrFailedSignin, Error: err}
+		return &cInfra.HandleError{HTTPError: handler.ErrFailedSignin, Error: err}
 	}
 
 	user, err := h.userLogic.GetByID(ctx, userID)
 	if err != nil {
-		r := ErrUnexpected
+		r := handler.ErrUnexpected
 		switch {
 		case errors.Is(err, code.CodeNotFound):
 			// 正しくユーザー登録が行われていればエラーとならない
 			// このケースは問題があるのでエラーレベルを引き上げる
 			err = errors.Errorf(code.CodeInternal, err.Error())
-			r = NewHTTPError("整合性エラー", "ログインIDに紐付くユーザー情報が見つかりません")
+			r = handler.NewHTTPError("整合性エラー", "ログインIDに紐付くユーザー情報が見つかりません")
 		}
-		return &infra.HandleError{HTTPError: r, Error: err}
+		return &cInfra.HandleError{HTTPError: r, Error: err}
 	}
 
 	token, err := h.sessionLogic.Start(ctx, user.UserID)
 	if err != nil {
-		r := NewHTTPError("サーバーエラー", "ログイントークンの発行に失敗しました")
-		return &infra.HandleError{HTTPError: r, Error: err}
+		r := handler.NewHTTPError("サーバーエラー", "ログイントークンの発行に失敗しました")
+		return &cInfra.HandleError{HTTPError: r, Error: err}
 	}
 
 	httpCtx.WriteJSON(http.StatusOK, &iodata.SigninOutput{
@@ -102,9 +104,9 @@ func (h *sessionHandler) Signin(ctx context.Context, httpCtx infra.HttpContext) 
 //	@Failure		500	{object}	infra.HTTPError
 //	@Security		Bearer
 //	@Router			/signout [delete]
-func (h *sessionHandler) Signout(ctx context.Context, httpCtx infra.HttpContext) *infra.HandleError {
+func (h *sessionHandler) Signout(ctx context.Context, httpCtx infra.HttpContext) *cInfra.HandleError {
 	if httpCtx.Method() != http.MethodDelete {
-		return &infra.HandleError{HTTPError: ErrPathNotExist}
+		return &cInfra.HandleError{HTTPError: handler.ErrPathNotExist}
 	}
 
 	h.sessionLogic.Signout(ctx)
