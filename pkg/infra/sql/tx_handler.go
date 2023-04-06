@@ -55,4 +55,3 @@ func (h *txHandler) Execute(ctx context.Context, query string, args ...interface
 }
 
 var _ infra.TxHandler = (*txHandler)(nil)
-var _ infra.Executer = (*txHandler)(nil)
