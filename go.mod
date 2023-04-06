@@ -5,8 +5,6 @@ go 1.20
 require (
 	github.com/gin-contrib/logger v0.2.5
 	github.com/gin-gonic/gin v1.9.0
-	github.com/gin-contrib/logger v0.2.5
-	github.com/gin-gonic/gin v1.9.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/google/wire v0.5.0
@@ -20,7 +18,6 @@ require (
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/http-swagger v1.3.4
-	github.com/swaggo/swag v1.8.12
 	github.com/swaggo/swag v1.8.12
 	github.com/tanimutomo/sqlfile v1.0.0
 	golang.org/x/crypto v0.7.0
