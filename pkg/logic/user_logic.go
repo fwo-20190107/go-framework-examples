@@ -80,11 +80,27 @@ func (l *userLogic) Signup(ctx context.Context, input *iodata.SignupInput) error
 }
 
 func (l *userLogic) ModifyAuthority(ctx context.Context, userID int, authority int8) error {
-	return l.userRepository.ModifyAuthority(ctx, userID, authority)
+	if _, err := l.transaction.Do(ctx, func(ctx context.Context) (interface{}, error) {
+		if err := l.userRepository.ModifyAuthority(ctx, userID, authority); err != nil {
+			return nil, err
+		}
+		return nil, nil
+	}); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (l *userLogic) ModifyName(ctx context.Context, userID int, name string) error {
-	return l.userRepository.ModifyName(ctx, userID, name)
+	if _, err := l.transaction.Do(ctx, func(ctx context.Context) (interface{}, error) {
+		if err := l.userRepository.ModifyName(ctx, userID, name); err != nil {
+			return nil, err
+		}
+		return nil, nil
+	}); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (l *userLogic) Authorization(ctx context.Context, required int8) (bool, error) {

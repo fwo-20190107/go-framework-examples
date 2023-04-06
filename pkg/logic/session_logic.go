@@ -26,13 +26,19 @@ type sessionLogic struct {
 	sonyflake         sonyflake.Sonyflake
 	sessionRepository repository.SessionRepository
 	loginRepository   repository.LoginRepository
+	transaction       repository.Transaction
 }
 
-func NewSessionLogic(sessionRepository repository.SessionRepository, loginRepository repository.LoginRepository) SessionLogic {
+func NewSessionLogic(
+	sessionRepository repository.SessionRepository,
+	loginRepository repository.LoginRepository,
+	transaction repository.Transaction,
+) SessionLogic {
 	return &sessionLogic{
 		sonyflake:         *sonyflake.NewSonyflake(sonyflake.Settings{}),
 		sessionRepository: sessionRepository,
 		loginRepository:   loginRepository,
+		transaction:       transaction,
 	}
 }
 
@@ -51,17 +57,22 @@ func (l *sessionLogic) Signin(ctx context.Context, input *iodata.SigninInput) (i
 	if login.Password != input.Password {
 		return 0, errors.Errorf(code.CodeBadRequest, "wrong loginID or password")
 	}
-
-	if err := l.loginRepository.ModifyLastSigned(ctx, login.LoginID); err != nil {
+	if _, err := l.transaction.Do(ctx, func(ctx context.Context) (interface{}, error) {
+		if err := l.loginRepository.ModifyLastSigned(ctx, login.LoginID); err != nil {
+			return nil, err
+		}
+		return nil, nil
+	}); err != nil {
 		return 0, err
 	}
+
 	return login.UserID, nil
 }
 
 func (l *sessionLogic) Signout(ctx context.Context) {
 	token, err := util.GetAccessToken(ctx)
 	if err != nil {
-		logger.L.Warn(ctx, err.Error())
+		logger.L.Warn(err.Error())
 		return
 	}
 	l.sessionRepository.Drop(ctx, token)
