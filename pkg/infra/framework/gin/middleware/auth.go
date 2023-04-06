@@ -12,7 +12,6 @@ import (
 	"examples/pkg/util"
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -53,9 +52,7 @@ func (m *AuthMiddleware) WithCheckToken() gin.HandlerFunc {
 }
 
 func warnLog(ctx context.Context, err error) {
-	if err := logger.L.Warn(ctx, fmt.Sprint(err)); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	}
+	logger.L.Warn(fmt.Sprint(err))
 }
 
 func unauthorized(c *gin.Context) {

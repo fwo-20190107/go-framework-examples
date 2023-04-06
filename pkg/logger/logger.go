@@ -1,13 +1,10 @@
+// logger package
+//
+// 完全独立したアプリケーションロガーでどこからでも呼び出し可能です
 package logger
 
 import (
-	ILog "examples/pkg/entity/infra/log"
-	"examples/pkg/infra/log"
-	"os"
+	"examples/pkg/entity/infra/log"
 )
 
-var L ILog.Logger
-
-func init() {
-	L = log.InitLogger(os.Stdout)
-}
+var L log.Logger
