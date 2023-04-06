@@ -23,7 +23,7 @@ func InitializeAppContainer(sqlh infra.SqlHandler, txh infra.TxHandler, store in
 	userLogic := logic.NewUserLogic(userRepository, loginRepository, transaction)
 	userHandler := handler.NewUserHandler(userLogic)
 	sessionRepository := repository.NewSessionRepository(store)
-	sessionLogic := logic.NewSessionLogic(sessionRepository, loginRepository)
+	sessionLogic := logic.NewSessionLogic(sessionRepository, loginRepository, transaction)
 	sessionHandler := handler.NewSessionHandler(userLogic, sessionLogic)
 	appContainer := handler.NewAppContainer(userHandler, sessionHandler)
 	return appContainer
