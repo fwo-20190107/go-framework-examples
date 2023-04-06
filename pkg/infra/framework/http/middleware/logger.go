@@ -19,8 +19,8 @@ func InitLoggerMiddleware(w io.Writer) {
 	Logger = &loggerMiddleware{logger: zerolog.New(w)}
 }
 
-func (m *loggerMiddleware) WithLogger(next http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (m *loggerMiddleware) WithLogger(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		writer := web.NewResponseWriter(w, r)
 
 		next.ServeHTTP(writer, r)
@@ -28,5 +28,5 @@ func (m *loggerMiddleware) WithLogger(next http.Handler) http.HandlerFunc {
 		if !strings.Contains(r.URL.Path, "swagger") {
 			m.logger.Info().Object("accesslog", writer).Send()
 		}
-	}
+	})
 }

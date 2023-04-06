@@ -7,8 +7,8 @@ import (
 	"runtime/debug"
 )
 
-func WithRecover(next http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func WithRecover(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
 				logger.L.Fatal(fmt.Sprintf("Msg: %v\n%s\n", err, string(debug.Stack())))
@@ -16,5 +16,5 @@ func WithRecover(next http.Handler) http.HandlerFunc {
 			}
 		}()
 		next.ServeHTTP(w, r)
-	}
+	})
 }

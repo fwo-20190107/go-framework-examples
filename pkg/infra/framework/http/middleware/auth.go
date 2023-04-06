@@ -26,8 +26,8 @@ func InitAuthMiddleware(store infra.LocalStore) {
 	Auth = &AuthMiddleware{sessionRepository: repository.NewSessionRepository(store)}
 }
 
-func (m *AuthMiddleware) WithCheckToken(next http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (m *AuthMiddleware) WithCheckToken(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
 		token := r.Header.Get("Authorization")
@@ -48,7 +48,7 @@ func (m *AuthMiddleware) WithCheckToken(next http.Handler) http.HandlerFunc {
 		r = r.WithContext(ctx)
 
 		next.ServeHTTP(w, r)
-	}
+	})
 }
 
 func warnLog(ctx context.Context, err error) {
