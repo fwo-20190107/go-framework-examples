@@ -12,7 +12,6 @@ import (
 	"examples/pkg/util"
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -60,9 +59,7 @@ func (m *AuthMiddleware) WithCheckToken(next echo.HandlerFunc) echo.HandlerFunc 
 }
 
 func warnLog(ctx context.Context, err error) {
-	if err := logger.L.Warn(ctx, fmt.Sprint(err)); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	}
+	logger.L.Warn(fmt.Sprint(err))
 }
 
 func unauthorized(c echo.Context) {

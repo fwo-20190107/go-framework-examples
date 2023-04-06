@@ -76,11 +76,16 @@ func (h *userHandler) GetAll(c *gin.Context) *infra.HandleError {
 }
 
 func (h *userHandler) GetByID(c *gin.Context) *infra.HandleError {
+	var param struct {
+		UserID int `uri:"user_id"`
+	}
 	uidp := c.Param("user_id")
 	userID, err := strconv.Atoi(uidp)
 	if err != nil {
 
 	}
+	c.BindUri(&param)
+	fmt.Println(param)
 
 	user, err := h.userLogic.GetByID(c, userID)
 	if err != nil {

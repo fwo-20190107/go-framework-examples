@@ -134,7 +134,7 @@ func (h *userHandler) ModifyAuthority(ctx context.Context, c echo.Context) *infr
 	// エラーが返却されていても、ログ出力のみに留め正常終了扱いでレスポンスを返却する
 	user, err := h.userLogic.GetByID(ctx, userID)
 	if err != nil {
-		logger.L.Warn(ctx, fmt.Sprint(err))
+		logger.L.Warn(fmt.Sprint(err))
 	}
 
 	c.JSON(http.StatusOK, iodata.UserOutput{
@@ -168,7 +168,7 @@ func (h *userHandler) ModifyName(ctx context.Context, c echo.Context) *infra.Han
 	// エラーが返却されていても、ログ出力のみに留め正常終了扱いでレスポンスを返却する
 	user, err := h.userLogic.GetByID(ctx, userID)
 	if err != nil {
-		logger.L.Warn(ctx, fmt.Sprint(err))
+		logger.L.Warn(fmt.Sprint(err))
 	}
 
 	c.JSON(http.StatusOK, iodata.UserOutput{

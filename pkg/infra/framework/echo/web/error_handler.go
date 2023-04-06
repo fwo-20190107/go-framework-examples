@@ -10,20 +10,19 @@ import (
 )
 
 func ErrorHandler(err error, c echo.Context) {
-	ctx := c.Request().Context()
 	status := errors.HTTPStatus(err)
 	switch {
 	case status >= http.StatusInternalServerError:
 		{
-			logger.L.Err(ctx, err.Error())
+			logger.L.Err(err.Error())
 		}
 	case status >= http.StatusBadRequest:
 		{
-			logger.L.Warn(ctx, err.Error())
+			logger.L.Warn(err.Error())
 		}
 	default:
 		{
-			logger.L.Fatal(ctx, err.Error())
+			logger.L.Fatal(err.Error())
 		}
 	}
 
