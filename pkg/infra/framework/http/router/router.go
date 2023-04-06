@@ -12,8 +12,8 @@ import (
 )
 
 func SetRoute(c *handler.AppContainer) {
-	defaultHandler := middleware.NewMiddlewareStack(middleware.LoggerMw.WithLogger, middleware.WithRecover)
-	authHandler := defaultHandler.Append(middleware.AuthMw.WithCheckToken)
+	defaultHandler := middleware.NewMiddlewareStack(middleware.Logger.WithLogger, middleware.WithRecover)
+	authHandler := defaultHandler.Append(middleware.Auth.WithCheckToken)
 
 	// handler
 	http.Handle("/signup", defaultHandler.Then(web.HttpHandler(c.User.Signup)))

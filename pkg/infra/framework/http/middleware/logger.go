@@ -9,14 +9,14 @@ import (
 	"github.com/rs/zerolog"
 )
 
-var LoggerMw *loggerMiddleware
+var Logger *loggerMiddleware
 
 type loggerMiddleware struct {
 	logger zerolog.Logger
 }
 
 func InitLoggerMiddleware(w io.Writer) {
-	LoggerMw = &loggerMiddleware{logger: zerolog.New(w)}
+	Logger = &loggerMiddleware{logger: zerolog.New(w)}
 }
 
 func (m *loggerMiddleware) WithLogger(next http.Handler) http.HandlerFunc {
