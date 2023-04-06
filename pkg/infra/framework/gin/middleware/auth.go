@@ -61,4 +61,5 @@ func warnLog(ctx context.Context, err error) {
 func unauthorized(c *gin.Context) {
 	c.Header("WWW-Authenticate", "Bearer error=\"invalid_token\"")
 	c.JSON(http.StatusUnauthorized, handler.HTTPErrUnauthorized)
+	c.Abort() // ginで処理中断する際のお作法
 }
