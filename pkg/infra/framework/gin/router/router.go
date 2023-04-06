@@ -17,7 +17,7 @@ func SetRoute(c *handler.AppContainer) *gin.Engine {
 	r.Use(middleware.WithLogger(), gin.Recovery())
 
 	authorized := r.Group("/")
-	authorized.Use(middleware.AuthMw.WithCheckToken())
+	authorized.Use(middleware.Auth.WithCheckToken())
 
 	r.POST("/signup", web.GinHandler(c.User.Signup).Exec)
 	r.POST("/signin", web.GinHandler(c.Session.Signin).Exec)

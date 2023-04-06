@@ -19,14 +19,14 @@ import (
 
 const tokenPrefix = "Bearer "
 
-var AuthMw *AuthMiddleware
+var Auth *AuthMiddleware
 
 type AuthMiddleware struct {
 	sessionRepository IRepository.SessionRepository
 }
 
 func InitAuthMiddleware(store infra.LocalStore) {
-	AuthMw = &AuthMiddleware{sessionRepository: repository.NewSessionRepository(store)}
+	Auth = &AuthMiddleware{sessionRepository: repository.NewSessionRepository(store)}
 }
 
 func (m *AuthMiddleware) WithCheckToken() gin.HandlerFunc {
