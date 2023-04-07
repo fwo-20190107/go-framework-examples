@@ -5,6 +5,7 @@ go 1.20
 require (
 	github.com/gin-contrib/logger v0.2.5
 	github.com/gin-gonic/gin v1.9.0
+	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/google/wire v0.5.0
@@ -38,6 +39,7 @@ require (
 	github.com/go-playground/validator/v10 v10.11.2 // indirect
 	github.com/goccy/go-json v0.10.0 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
