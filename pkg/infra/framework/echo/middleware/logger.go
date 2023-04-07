@@ -34,7 +34,6 @@ func (m *loggerMiddleware) WithLogger() echo.MiddlewareFunc {
 			return false
 		},
 		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
-			c.Logger()
 			m.logger.Info().
 				Str("requestURI", v.URI).
 				Str("method", v.Method).
