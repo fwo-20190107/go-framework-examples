@@ -1,9 +1,9 @@
 package router
 
 import (
-	"examples/pkg/adapter/framework/gin/handler"
-	"examples/pkg/infra/framework/gin/middleware"
-	"examples/pkg/infra/framework/gin/web"
+	"examples/pkg/adapter/handler"
+	"examples/pkg/infra/middleware"
+	"examples/pkg/infra/web"
 
 	_ "examples/docs"
 

@@ -1,7 +1,7 @@
 package web
 
 import (
-	"examples/pkg/adapter/framework/gin/infra"
+	"examples/pkg/adapter/infra"
 	"examples/pkg/errors"
 	"examples/pkg/logger"
 	"fmt"

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"examples/pkg/adapter/handler"
 	"examples/pkg/adapter/infra"
 	"examples/pkg/code"
 	"examples/pkg/errors"
@@ -37,15 +36,15 @@ func NewUserHandler(userLogic logic.UserLogic) UserHandler {
 func (h *userHandler) Signup(c *gin.Context) *infra.HandleError {
 	var input *iodata.SignupInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		return &infra.HandleError{HTTPError: handler.ErrValidParam, Error: err}
+		return &infra.HandleError{HTTPError: ErrValidParam, Error: err}
 	}
 
 	if err := input.Validate(); err != nil {
-		return &infra.HandleError{HTTPError: handler.ErrValidParam, Error: err}
+		return &infra.HandleError{HTTPError: ErrValidParam, Error: err}
 	}
 
 	if err := h.userLogic.Signup(c, input); err != nil {
-		return &infra.HandleError{HTTPError: handler.ErrUnexpected, Error: err}
+		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
 	}
 	return nil
 }
@@ -53,10 +52,10 @@ func (h *userHandler) Signup(c *gin.Context) *infra.HandleError {
 func (h *userHandler) GetAll(c *gin.Context) *infra.HandleError {
 	users, err := h.userLogic.GetAll(c)
 	if err != nil {
-		r := handler.ErrUnexpected
+		r := ErrUnexpected
 		switch {
 		case errors.Is(err, code.CodeNotFound):
-			r = handler.NewHTTPError("エラー", "ユーザーデータなし")
+			r = NewHTTPError("エラー", "ユーザーデータなし")
 		}
 		return &infra.HandleError{HTTPError: r, Error: err}
 	}
@@ -89,10 +88,10 @@ func (h *userHandler) GetByID(c *gin.Context) *infra.HandleError {
 
 	user, err := h.userLogic.GetByID(c, userID)
 	if err != nil {
-		r := handler.ErrUnexpected
+		r := ErrUnexpected
 		switch {
 		case errors.Is(err, code.CodeNotFound):
-			r = handler.NewHTTPError("エラー", "ユーザーデータなし")
+			r = NewHTTPError("エラー", "ユーザーデータなし")
 		}
 		return &infra.HandleError{HTTPError: r, Error: err}
 	}
@@ -109,10 +108,10 @@ func (h *userHandler) ModifyAuthority(c *gin.Context) *infra.HandleError {
 	// リクエスト者の権限を確認
 	const requiredAuthority = 99
 	if ok, err := h.userLogic.Authorization(c, requiredAuthority); err != nil {
-		return &infra.HandleError{HTTPError: handler.ErrUnexpected, Error: err}
+		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
 	} else if !ok {
 		err = errors.Errorf(code.CodeUnauthorized, "lack of authority: %d", requiredAuthority)
-		return &infra.HandleError{HTTPError: handler.ErrUnexpected, Error: err}
+		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
 	}
 
 	uidp := c.Param("user_id")
@@ -123,14 +122,14 @@ func (h *userHandler) ModifyAuthority(c *gin.Context) *infra.HandleError {
 
 	var input *iodata.ModifyAuthorityInput
 	if err := c.BindJSON(&input); err != nil {
-		return &infra.HandleError{HTTPError: handler.ErrValidParam, Error: err}
+		return &infra.HandleError{HTTPError: ErrValidParam, Error: err}
 	}
 	if err := input.Validate(); err != nil {
 		return &infra.HandleError{}
 	}
 
 	if err := h.userLogic.ModifyAuthority(c, userID, input.Authority); err != nil {
-		return &infra.HandleError{HTTPError: handler.ErrUnexpected, Error: err}
+		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
 	}
 
 	// 更新後データ 再取得
@@ -157,14 +156,14 @@ func (h *userHandler) ModifyName(c *gin.Context) *infra.HandleError {
 
 	var input *iodata.ModifyNameInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		return &infra.HandleError{HTTPError: handler.ErrValidParam, Error: err}
+		return &infra.HandleError{HTTPError: ErrValidParam, Error: err}
 	}
 	if err := input.Validate(); err != nil {
 		return &infra.HandleError{}
 	}
 
 	if err := h.userLogic.ModifyName(c, userID, input.Name); err != nil {
-		return &infra.HandleError{HTTPError: handler.ErrUnexpected, Error: err}
+		return &infra.HandleError{HTTPError: ErrUnexpected, Error: err}
 	}
 
 	// 更新後データ 再取得
