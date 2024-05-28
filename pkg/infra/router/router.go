@@ -19,14 +19,14 @@ func SetRoute(c *handler.AppContainer) *gin.Engine {
 	authorized := r.Group("/")
 	authorized.Use(middleware.Auth.WithCheckToken())
 
-	r.POST("/signup", web.GinHandler(c.User.Signup).Exec)
-	r.POST("/signin", web.GinHandler(c.Session.Signin).Exec)
-	authorized.DELETE("/signout", web.GinHandler(c.Session.Signout).Exec)
+	r.POST("/signup", web.Handler(c.User.Signup).Exec)
+	r.POST("/signin", web.Handler(c.Session.Signin).Exec)
+	authorized.DELETE("/signout", web.Handler(c.Session.Signout).Exec)
 
-	authorized.GET("/user", web.GinHandler(c.User.GetAll).Exec)
-	authorized.GET("/user/:user_id", web.GinHandler(c.User.GetByID).Exec)
-	authorized.PATCH("/user", web.GinHandler(c.User.ModifyName).Exec)
-	authorized.PATCH("/user/:user_id", web.GinHandler(c.User.ModifyAuthority).Exec)
+	authorized.GET("/user", web.Handler(c.User.GetAll).Exec)
+	authorized.GET("/user/:user_id", web.Handler(c.User.GetByID).Exec)
+	authorized.PATCH("/user", web.Handler(c.User.ModifyName).Exec)
+	authorized.PATCH("/user/:user_id", web.Handler(c.User.ModifyAuthority).Exec)
 
 	// swagger UI
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler,

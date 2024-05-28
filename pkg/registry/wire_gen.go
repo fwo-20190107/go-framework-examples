@@ -16,7 +16,7 @@ import (
 // Injectors from app_container.go:
 
 // wire用
-func InitializeAppContainer(sqlh infra.SqlHandler, txh infra.TxHandler, store infra.LocalStore) *handler.AppContainer {
+func InitializeAppContainer(sqlh infra.SQLHandler, txh infra.TxHandler, store infra.LocalStore) *handler.AppContainer {
 	userRepository := repository.NewUserRepository(sqlh)
 	loginRepository := repository.NewLoginRepository(sqlh)
 	transaction := repository.NewTransaction(txh)

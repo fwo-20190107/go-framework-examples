@@ -1,6 +1,7 @@
 //go:build wireinject
 // +build wireinject
 
+// Package registry is required `make wire`
 package registry
 
 import (
@@ -13,7 +14,7 @@ import (
 )
 
 // wire用
-func InitializeAppContainer(sqlh infra.SqlHandler, txh infra.TxHandler, store infra.LocalStore) *handler.AppContainer {
+func InitializeAppContainer(sqlh infra.SQLHandler, txh infra.TxHandler, store infra.LocalStore) *handler.AppContainer {
 	wire.Build(
 		handler.NewAppContainer,
 		handler.NewUserHandler,

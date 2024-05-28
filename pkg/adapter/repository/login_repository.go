@@ -12,10 +12,10 @@ import (
 )
 
 type loginRepository struct {
-	infra.SqlHandler
+	infra.SQLHandler
 }
 
-func NewLoginRepository(handler infra.SqlHandler) repository.LoginRepository {
+func NewLoginRepository(handler infra.SQLHandler) repository.LoginRepository {
 	return &loginRepository{handler}
 }
 

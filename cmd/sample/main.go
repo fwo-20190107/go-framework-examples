@@ -50,7 +50,7 @@ func run() error {
 	}
 
 	// infrastracture datasource accesssor
-	sqlh := sql.NewSqlHandler(con)
+	sqlh := sql.NewSQLHandler(con)
 	txh := sql.NewTxHandler(con)
 	store := cache.NewLocalStore()
 

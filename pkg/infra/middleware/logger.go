@@ -15,6 +15,6 @@ func WithLogger(opts ...logger.Option) gin.HandlerFunc {
 			With().
 			Str("remoteIp", c.Request.RemoteAddr).
 			Logger()
-	}), logger.WithSkipPathRegexp(reg))
+	}), logger.WithSkipPathRegexps(reg))
 	return logger.SetLogger(opts...)
 }

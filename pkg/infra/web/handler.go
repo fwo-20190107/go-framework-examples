@@ -10,9 +10,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type GinHandler infra.GinHandler
+type Handler infra.Handler
 
-func (fn GinHandler) Exec(c *gin.Context) {
+func (fn Handler) Exec(c *gin.Context) {
 	c.Set("Content-Type", "application/json")
 
 	if err := fn(c); err != nil {
@@ -29,4 +29,4 @@ func (fn GinHandler) Exec(c *gin.Context) {
 	}
 }
 
-var _ gin.HandlerFunc = (GinHandler)(nil).Exec
+var _ gin.HandlerFunc = (Handler)(nil).Exec

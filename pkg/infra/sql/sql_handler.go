@@ -14,7 +14,7 @@ type sqlHandler struct {
 	con *sql.DB
 }
 
-func NewSqlHandler(con *sql.DB) *sqlHandler {
+func NewSQLHandler(con *sql.DB) *sqlHandler {
 	return &sqlHandler{
 		con: con,
 	}
@@ -50,7 +50,7 @@ func (h *sqlHandler) Query(ctx context.Context, query string, args ...any) (*sql
 	return rows, nil
 }
 
-func InitializeDb(con *sql.DB) error {
+func InitializeDB(con *sql.DB) error {
 	s := sqlfile.New()
 	if err := s.Directory("../testdata"); err != nil {
 		return errors.Wrap(code.CodeInternal, err)
@@ -61,4 +61,4 @@ func InitializeDb(con *sql.DB) error {
 	return nil
 }
 
-var _ infra.SqlHandler = (*sqlHandler)(nil)
+var _ infra.SQLHandler = (*sqlHandler)(nil)

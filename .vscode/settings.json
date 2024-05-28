@@ -1,5 +1,11 @@
 {
     "gopls": {
-        "build.buildFlags": ["-tags=wireinject"]
-    },
+        "build.buildFlags": [
+            "-tags=wireinject"
+        ],
+        "analyses": {
+            "ST1000": false,
+            "ST1020": false
+        }
+    }
 }
